@@ -1,0 +1,223 @@
+<?php
+// login.php
+// Portal Log Masuk Premium (Glassmorphism & Secure authentication)
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Jika sudah log masuk, terus lencongkan ke Dashboard
+if (isset($_SESSION['user_id'])) {
+    header('Location: index.php');
+    exit;
+}
+
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once 'config/db.php';
+
+    $username = trim($_POST['username'] ?? '');
+    $password = trim($_POST['password'] ?? '');
+
+    if (!empty($username) && !empty($password)) {
+        try {
+            // Carian pengguna di dalam users_hub
+            $stmt = $pdo->prepare("SELECT * FROM users_hub WHERE username = ? AND is_active = 1 LIMIT 1");
+            $stmt->execute([$username]);
+            $user = $stmt->fetch();
+
+            if ($user) {
+                // Menyokong padanan teks biasa (legacy data) DAN password_verify (secure hash)
+                if ($password === $user['password_hash'] || password_verify($password, $user['password_hash'])) {
+                    // Set Sesi
+                    $_SESSION['user_id']   = $user['id'];
+                    $_SESSION['username']  = $user['username'];
+                    $_SESSION['role']      = $user['role']; // cth: 'admin', 'dealer', dll.
+                    $_SESSION['full_name'] = $user['full_name'];
+
+                    log_system_activity("User Logged In", "users_hub", $user['id'], "Pengguna '{$user['username']}' berjaya log masuk dari IP {$_SERVER['REMOTE_ADDR']}.");
+
+                    header('Location: index.php');
+                    exit;
+                }
+            }
+            $error = 'Nama pengguna atau kata laluan salah!';
+
+        } catch (Exception $e) {
+            $error = 'Masalah pelayan: ' . $e->getMessage();
+        }
+    } else {
+        $error = 'Sila isi semua ruangan!';
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS Login | Moo Moo Supplies</title>
+    <!-- Favicon / Gambar Browser Logo -->
+    <link rel="shortcut icon" href="uploads/logo.png" type="image/png">
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Custom Design & Responsive Stylesheet -->
+    <link href="assets/css/style.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --mms-bg-grad: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        body {
+            background: var(--mms-bg-grad);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        /* Glassmorphism Card Upgraded */
+        .login-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 3.5rem 2.5rem;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 10;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: var(--mms-cyan) !important;
+            box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.2) !important;
+        }
+
+        .btn-mms-submit {
+            background: var(--gradient-accent) !important;
+            color: white;
+            border: none;
+            font-weight: 700;
+            padding: 14px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-mms-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.35);
+            color: white;
+        }
+
+        .form-label {
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        /* Abstract glowing circles in background */
+        .glow-circle {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(6, 182, 212, 0.12);
+            filter: blur(90px);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .glow-1 { top: 10%; left: 20%; }
+        .glow-2 { bottom: 10%; right: 20%; background: rgba(99, 102, 241, 0.1); }
+
+        /* Mobile Viewport Sizing Adjustments */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 2.2rem 1.5rem;
+                border-radius: 18px;
+            }
+            
+            .login-card img {
+                width: 90px !important;
+            }
+            
+            body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-circle glow-1"></div>
+    <div class="glow-circle glow-2"></div>
+
+    <div class="login-card text-center">
+        
+        <div class="mb-4">
+            <img src="uploads/logo.png" alt="MMS Logo" style="width: 110px; height: auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(2, 132, 199, 0.25); border: 2px solid rgba(255, 255, 255, 0.1);">
+        </div>
+        
+        <h3 class="fw-800 text-white mb-1" style="letter-spacing: -0.5px;">MOO MOO SUPPLIES</h3>
+        <p class="small mb-4" style="color: #cbd5e1;">Warehouse & Logistics Management</p>
+
+        <?php if (!empty($error)): ?>
+            <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger text-start small p-3 rounded-3" role="alert">
+                <i class="bi bi-exclamation-octagon me-2"></i> <?= htmlspecialchars($error) ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="POST" action="login.php" class="text-start">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" placeholder="Type username" required autocomplete="username">
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Type password" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn btn-mms-submit w-100 py-3 mt-2 shadow-lg">
+                <i class="bi bi-shield-lock-fill me-2"></i> LOG IN TO PORTAL
+            </button>
+        </form>
+        
+        <div class="mt-4 pt-2 border-top border-secondary border-opacity-10">
+            <p class="small mb-0" style="color: #cbd5e1;"><i class="bi bi-lock me-1"></i> Intranet Access Only</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+[08-Dec-2025 03:48:35 UTC] PHP Warning:  Undefined variable $pdo in /home/susumura/public_html/wms.susumurah.com.my/save_import.php on line 128
+[08-Dec-2025 03:48:35 UTC] PHP Fatal error:  Uncaught Error: Call to a member function inTransaction() on null in /home/susumura/public_html/wms.susumurah.com.my/save_import.php:128
+Stack trace:
+#0 {main}
+  thrown in /home/susumura/public_html/wms.susumurah.com.my/save_import.php on line 128
+[08-Dec-2025 04:00:53 UTC] PHP Fatal error:  Uncaught PDOException: There is no active transaction in /home/susumura/public_html/wms.susumurah.com.my/import_master.php:88
+Stack trace:
+#0 /home/susumura/public_html/wms.susumurah.com.my/import_master.php(88): PDO->rollBack()
+#1 {main}
+  thrown in /home/susumura/public_html/wms.susumurah.com.my/import_master.php on line 88

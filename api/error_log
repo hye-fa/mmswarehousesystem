@@ -1,0 +1,103 @@
+[07-Dec-2025 06:54:21 UTC] PHP Deprecated:  auto_detect_line_endings is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/save_school_import.php on line 11
+[07-Dec-2025 06:55:46 UTC] PHP Deprecated:  auto_detect_line_endings is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/save_school_import.php on line 11
+[07-Dec-2025 06:56:24 UTC] PHP Deprecated:  auto_detect_line_endings is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/save_school_import.php on line 11
+[07-Dec-2025 06:56:32 UTC] PHP Deprecated:  auto_detect_line_endings is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/save_school_import.php on line 11
+[07-Dec-2025 06:59:24 UTC] PHP Deprecated:  auto_detect_line_endings is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/save_school_import.php on line 11
+[07-Dec-2025 06:59:24 UTC] PHP Fatal error:  Uncaught PDOException: There is no active transaction in /home/susumura/public_html/wms.susumurah.com.my/api/save_school_import.php:144
+Stack trace:
+#0 /home/susumura/public_html/wms.susumurah.com.my/api/save_school_import.php(144): PDO->rollBack()
+#1 {main}
+  thrown in /home/susumura/public_html/wms.susumurah.com.my/api/save_school_import.php on line 144
+[07-Dec-2025 07:33:00 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user 'root'@'localhost' (using password: NO) in /home/susumura/public_html/wms.susumurah.com.my/api/save_co_update.php:11
+Stack trace:
+#0 /home/susumura/public_html/wms.susumurah.com.my/api/save_co_update.php(11): mysqli->__construct('localhost', 'root', Object(SensitiveParameterValue), 'school_db')
+#1 {main}
+  thrown in /home/susumura/public_html/wms.susumurah.com.my/api/save_co_update.php on line 11
+[16-Feb-2026 09:04:40 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 23
+[16-Feb-2026 09:04:40 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 23
+[16-Feb-2026 09:04:40 UTC] PHP Warning:  Undefined array key 2 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 24
+[16-Feb-2026 09:04:40 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 24
+[16-Feb-2026 09:04:40 UTC] PHP Warning:  Undefined array key 3 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 25
+[16-Feb-2026 09:04:40 UTC] PHP Warning:  Undefined array key 4 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 26
+[16-Feb-2026 09:09:44 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:09:44 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 42
+[16-Feb-2026 09:15:06 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Warning:  Undefined array key 1 in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[16-Feb-2026 09:15:06 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home/susumura/public_html/wms.susumurah.com.my/api/process_product_import.php on line 41
+[17-Feb-2026 03:08:30 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:08:30 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:25:23 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:32:55 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:32:55 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:32:55 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:32:55 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
+[17-Feb-2026 03:32:55 UTC] PHP Warning:  Undefined array key "batch_no" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 92
+[17-Feb-2026 03:32:55 UTC] PHP Warning:  Undefined array key "expiry_date" in /home/susumura/public_html/wms.susumurah.com.my/api/save_receiving_multi.php on line 95
