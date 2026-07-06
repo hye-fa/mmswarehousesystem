@@ -82,8 +82,8 @@ require_once 'includes/header.php';
                                 <p class="mb-0 fw-bold">Tiada data pengguna ditemui.</p>
                             </td>
                         </tr>
-                    <?php else: ?>
-                        <?php foreach($users as $u): 
+                    <?php else: 
+ foreach($users as $u): 
                             $status_badge = $u['is_active'] ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger';
                             $status_text = $u['is_active'] ? 'Aktif' : 'Nyahaktif';
                             
@@ -124,8 +124,8 @@ require_once 'includes/header.php';
                                 </div>
                             </td>
                         </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                        <?php endforeach; 
+ endif; ?>
                 </tbody>
             </table>
         </div>
@@ -187,8 +187,6 @@ require_once 'includes/header.php';
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>

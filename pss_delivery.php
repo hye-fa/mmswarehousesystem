@@ -30,9 +30,7 @@ $stmt->execute([$selected_co]);
 $schools = $stmt->fetchAll();
 
 $batches = $pdo->query("SELECT b.id, b.batch_no, b.expiry_date, b.qty_on_hand FROM inventory_batches b JOIN products p ON b.product_id = p.id WHERE p.category = 'PSS' AND b.qty_on_hand > 0 AND b.location_status = 'Warehouse' ORDER BY b.expiry_date ASC")->fetchAll();
-?>
 
-<?php
 $page_title = 'MMS | PSS Management Hub';
 require_once 'includes/header.php';
 ?>
@@ -244,9 +242,9 @@ require_once 'includes/header.php';
                                         <option value="" disabled selected>⚠️ Tiada Stok PSS Tersedia</option>
                                     <?php else: ?>
                                         <?php foreach($batches as $b): ?>
-                                            <option value="<?= $b['id'] ?>">
-                                                Batch: <?= htmlspecialchars($b['batch_no'] ?: 'Tiada Kod') ?> | Baki: <?= $b['qty_on_hand'] ?> ctn | Luput: <?= date('d/m/y', strtotime($b['expiry_date'])) ?>
-                                            </option>
+                                             <option value="<?= $b['id'] ?>">
+                                                 Batch: <?= htmlspecialchars($b['batch_no'] ?: 'Tiada Kod') ?> | Baki: <?= $b['qty_on_hand'] ?> ctn | Luput: <?= $b['expiry_date'] ? date('d/m/y', strtotime($b['expiry_date'])) : 'Tiada Tarikh' ?>
+                                             </option>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </select>

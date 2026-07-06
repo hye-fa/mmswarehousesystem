@@ -10,9 +10,8 @@ $query = "SELECT sl.*, p.name as product_name, b.batch_no
           JOIN products p ON b.product_id = p.id
           ORDER BY sl.reported_at DESC";
 $reports = $pdo->query($query)->fetchAll();
-?>
 
-<?php
+
 $page_title = 'Spoilage & Supplier Claims';
 require_once 'includes/header.php';
 ?>
@@ -60,9 +59,8 @@ require_once 'includes/header.php';
                 <tbody>
                     <?php if (empty($reports)): ?>
                         <tr><td colspan="8" class="text-center py-5 text-muted">No damage records found.</td></tr>
-                    <?php endif; ?>
-
-                    <?php foreach($reports as $row): ?>
+                    <?php endif; 
+ foreach($reports as $row): ?>
                     <tr>
                         <td class="ps-3 small"><?= date('d/m/Y', strtotime($row['reported_at'])) ?></td>
                         <td>

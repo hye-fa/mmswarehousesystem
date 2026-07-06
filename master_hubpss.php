@@ -22,9 +22,8 @@ try {
     $total_schools = $total_delivered = $total_cartons = 0;
     $progress_percent = 0;
 }
-?>
 
-<?php
+
 $page_title = 'MMS Master Hub PSS';
 require_once 'includes/header.php';
 ?>
@@ -45,6 +44,12 @@ require_once 'includes/header.php';
     .btn { padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
     #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; }
     .toast { background: rgba(44, 62, 80, 0.95); color: white; padding: 12px 25px; border-radius: 30px; margin-bottom: 10px; }
+    @media (max-width: 768px) {
+        .container { padding: 15px; margin: 10px auto; border-radius: 10px; }
+        .stock-grid { grid-template-columns: 1fr; }
+        .setup-grid { padding: 15px; }
+        td, th { padding: 10px 8px; font-size: 0.85rem; }
+    }
 </style>
 
 <div id="toast-container"></div>
@@ -187,4 +192,4 @@ require_once 'includes/header.php';
     window.onload = loadDataFromServer;
 </script>
 
-<?php require_once 'includes/footer.php'; ?>d
+<?php require_once 'includes/footer.php'; ?>

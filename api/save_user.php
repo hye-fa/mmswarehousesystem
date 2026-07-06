@@ -58,7 +58,9 @@ try {
             $stmt->execute([$username, $full_name, $role, $is_active, $user_id]);
         }
 
-        log_system_activity("Updated User", "users_hub", $user_id, "Mengemas kini pengguna '$username' (Role: $role, Aktif: $is_active).");
+        if (function_exists('log_system_activity')) {
+            log_system_activity("Updated User", "users_hub", $user_id, "Mengemas kini pengguna '$username' (Role: $role, Aktif: $is_active).");
+        }
         echo json_encode(['success' => 'Maklumat pengguna berjaya dikemaskini.']);
     } else {
         // OPERASI TAMBAH PENGGUNA BARU
@@ -84,7 +86,9 @@ try {
         $stmtInsert->execute([$username, $full_name, $password, $role, $is_active]);
         $new_id = $pdo->lastInsertId();
 
-        log_system_activity("Created User", "users_hub", $new_id, "Mendaftar pengguna baharu '$username' (Role: $role, Aktif: $is_active).");
+        if (function_exists('log_system_activity')) {
+            log_system_activity("Created User", "users_hub", $new_id, "Mendaftar pengguna baharu '$username' (Role: $role, Aktif: $is_active).");
+        }
         echo json_encode(['success' => 'Pengguna baharu berjaya didaftarkan.']);
     }
 

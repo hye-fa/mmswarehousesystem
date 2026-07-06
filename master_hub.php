@@ -1,16 +1,17 @@
 <?php
 // master_hub.php - REORGANIZED COMMAND CENTER
 require_once 'config/db.php';
+require_once 'includes/header.php';
 
 try {
     $total_products = $pdo->query("SELECT COUNT(*) FROM products WHERE is_active = 1")->fetchColumn();
 } catch (Exception $e) {
     $total_products = "0";
 }
-?>
-<?php
+
+
 $page_title = 'MMS Master Hub | Susumura';
-require_once 'includes/header.php';
+
 ?>
 <style>
     .section-header { 
@@ -121,7 +122,7 @@ require_once 'includes/header.php';
                             <span class="menu-sub">Bulk Address & Student Count Update.</span>
                         </div>
                     </a>
-                    <a href="import_co_ui.html" class="list-group-item list-group-item-action">
+                    <a href="import_co_ui.php" class="list-group-item list-group-item-action">
                         <div class="icon-box bg-warning-subtle text-warning-emphasis"><i class="bi bi-file-earmark-arrow-up"></i></div>
                         <div>
                             <span class="menu-title">Import Monthly CO</span>

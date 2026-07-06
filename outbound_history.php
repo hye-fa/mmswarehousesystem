@@ -101,8 +101,8 @@ require_once 'includes/header.php';
                                 <p class="mb-0 fw-bold">Tiada rekod penghantaran keluar ditemui.</p>
                             </td>
                         </tr>
-                    <?php else: ?>
-                        <?php foreach($history as $row): 
+                    <?php else: 
+ foreach($history as $row): 
                             $badge_class = ($row['category'] === 'Commercial') ? 'bg-primary-subtle text-primary' : 'bg-success-subtle text-success';
                         ?>
                         <tr>
@@ -123,8 +123,8 @@ require_once 'includes/header.php';
                                 </button>
                             </td>
                         </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                        <?php endforeach; 
+ endif; ?>
                 </tbody>
             </table>
         </div>
@@ -166,10 +166,6 @@ require_once 'includes/header.php';
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
     $(document).ready(function() {

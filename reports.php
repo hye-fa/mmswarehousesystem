@@ -53,7 +53,7 @@ $sql_inbound = "
     SELECT l.id, l.received_date, l.supplier_do, l.category, COUNT(i.id) as item_count, 
            (COALESCE(l.pallet_qty_loscam_red, 0) + COALESCE(l.pallet_qty_ffm_orange, 0) + 
             COALESCE(l.pallet_qty_ffm_green, 0) + COALESCE(l.pallet_qty_lhp_green, 0) + 
-            COALESCE(l.pallet_qty_plastic_black, 0)) as total_pallets
+            COALESCE(l.pallet_qty_plain_wood, 0) + COALESCE(l.pallet_qty_plastic_black, 0)) as total_pallets
     FROM inbound_logs l
     LEFT JOIN inbound_items i ON l.id = i.inbound_id
     GROUP BY l.id ORDER BY l.received_date DESC LIMIT 50
@@ -82,6 +82,7 @@ $stock_balance = $pdo->query($sql_stock)->fetchAll();
 // Pallet Liability
 $sql_pallets = "SELECT SUM(pallet_qty_loscam_red) as red, SUM(pallet_qty_ffm_orange) as orange,
                 SUM(pallet_qty_ffm_green) as ffm_green, SUM(pallet_qty_lhp_green) as lhp_green,
+                SUM(pallet_qty_plain_wood) as plain,
                 SUM(pallet_qty_plastic_black) as black FROM inbound_logs";
 $pallet_totals = $pdo->query($sql_pallets)->fetch();
 ?>
@@ -197,6 +198,7 @@ require_once 'includes/header.php';
     </div>
 
     <div class="row g-3 mb-4">
+        <div class="col"><div class="pallet-box border-top border-4" style="border-top-color: #8b5a2b !important;"><span class="pallet-num" style="color: #8b5a2b;"><?= number_format($pallet_totals['plain'] ?? 0) ?></span><small class="fw-bold text-muted">PLAIN WOOD</small></div></div>
         <div class="col"><div class="pallet-box border-top border-danger border-4"><span class="pallet-num text-danger"><?= number_format($pallet_totals['red'] ?? 0) ?></span><small class="fw-bold text-muted">LOSCAM RED</small></div></div>
         <div class="col"><div class="pallet-box border-top border-warning border-4"><span class="pallet-num text-warning"><?= number_format($pallet_totals['orange'] ?? 0) ?></span><small class="fw-bold text-muted">FFM ORANGE</small></div></div>
         <div class="col"><div class="pallet-box border-top border-success border-4"><span class="pallet-num text-success"><?= number_format($pallet_totals['lhp_green'] ?? 0) ?></span><small class="fw-bold text-muted">LHP GREEN</small></div></div>

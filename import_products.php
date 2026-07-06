@@ -1,8 +1,8 @@
 <?php
 // import_products.php
 require_once 'config/db.php';
-?>
-<?php
+
+
 $page_title = 'Master Product Import | MMS';
 require_once 'includes/header.php';
 ?>

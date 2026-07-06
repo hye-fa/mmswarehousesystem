@@ -47,14 +47,14 @@ try {
     $row_red = 0; $row_lhp = 0; $row_ffm = 0; $row_orange = 0; $row_black = 0; $row_plain = 0;
 
     foreach ($items as $item) {
-        $type = $item['pallet_type'] ?? '';
-        $qty  = (int)($item['pallet_qty'] ?? 0);
-        if ($type === 'Loscam Red') $row_red += $qty;
-        if ($type === 'LHP Green') $row_lhp += $qty;
-        if ($type === 'FFM Green') $row_ffm += $qty;
-        if ($type === 'FFM Orange') $row_orange += $qty;
-        if ($type === 'Plastic Black') $row_black += $qty;
-        if ($type === 'Plain') $row_plain += $qty;
+        $type = strtolower($item['pallet_type'] ?? $item['p_type'] ?? '');
+        $qty  = (int)($item['pallet_qty'] ?? $item['p_qty'] ?? 0);
+        if ($type === 'loscam red' || $type === 'red') $row_red += $qty;
+        if ($type === 'lhp green' || $type === 'lhp') $row_lhp += $qty;
+        if ($type === 'ffm green' || $type === 'ffm') $row_ffm += $qty;
+        if ($type === 'ffm orange' || $type === 'orange') $row_orange += $qty;
+        if ($type === 'plastic black' || $type === 'black') $row_black += $qty;
+        if ($type === 'plain' || $type === 'plain wood') $row_plain += $qty;
     }
 
     // TOTALS
@@ -63,22 +63,23 @@ try {
     $total_black  = $man_black + $row_black;
     $total_ffm    = $man_ffm + $row_ffm;    // NEW
     $total_lhp    = $man_lhp + $row_lhp;    // NEW
+    $total_plain  = $man_plain + $row_plain;  // NEW
     
     $pallet_remarks = "PO: $po_number";
     if (($man_plain + $row_plain) > 0) $pallet_remarks .= " | Plain: " . ($man_plain + $row_plain);
 
-    // INSERT LOG (Added Green Columns)
+    // INSERT LOG (Added Green & Plain Columns)
     $stmt = $pdo->prepare("INSERT INTO inbound_logs 
         (category, received_date, supplier_do, remarks, 
          pallet_qty_loscam_red, pallet_qty_ffm_orange, pallet_qty_plastic_black,
-         pallet_qty_ffm_green, pallet_qty_lhp_green,
+         pallet_qty_ffm_green, pallet_qty_lhp_green, pallet_qty_plain_wood,
          transporter_name, driver_name, vehicle_plate, arrival_time) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         
     $stmt->execute([
         $category, $recv_date, $supplier_do, $pallet_remarks, 
         $total_red, $total_orange, $total_black, 
-        $total_ffm, $total_lhp,
+        $total_ffm, $total_lhp, $total_plain,
         $transporter, $driver, $plate, $arrival
     ]);
     $inbound_id = $pdo->lastInsertId();
@@ -87,13 +88,25 @@ try {
     if (empty($items)) throw new Exception("No items found.");
     $count = 0;
 
+    $pallet_map = [
+        'none' => 'No Pallet',
+        'plain' => 'Plain',
+        'red' => 'Loscam Red',
+        'lhp' => 'LHP Green',
+        'orange' => 'FFM Orange',
+        'ffm' => 'FFM Green',
+        'black' => 'Plastic Black'
+    ];
+
     foreach ($items as $item) {
         $prod_id   = $item['product_id'];
-        $batch     = $item['batch_no'];
+        $batch     = $item['batch_no'] ?? $item['batch'] ?? '';
         $qty       = $item['qty'];
         $prod_time = !empty($item['production_time']) ? $item['production_time'] : null;
-        $expiry    = convertDate($item['expiry_date']);
-        $p_type    = $item['pallet_type'] ?? 'No Pallet';
+        $expiry    = convertDate($item['expiry_date'] ?? $item['expiry'] ?? '');
+        
+        $raw_p_type = strtolower($item['pallet_type'] ?? $item['p_type'] ?? 'none');
+        $p_type     = $pallet_map[$raw_p_type] ?? $raw_p_type;
 
         if ($qty > 0 && !empty($prod_id)) {
             // A. Add to HISTORY
@@ -113,7 +126,9 @@ try {
     }
 
     // Rekod log audit sistem
-    log_system_activity("Received Inbound Stock", "inbound_logs", $inbound_id, "Stok diterima: GRN ID $inbound_id, Supplier DO $supplier_do ($count jenis item).");
+    if (function_exists('log_system_activity')) {
+        log_system_activity("Received Inbound Stock", "inbound_logs", $inbound_id, "Stok diterima: GRN ID $inbound_id, Supplier DO $supplier_do ($count jenis item).");
+    }
 
     $pdo->commit();
 

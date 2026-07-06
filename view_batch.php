@@ -49,9 +49,8 @@ if ($batchId) {
         die("Error fetching report: " . $e->getMessage());
     }
 }
-?>
 
-<?php
+
 $page_title = 'MMS | Monthly Order Report';
 require_once 'includes/header.php';
 ?>
@@ -144,8 +143,8 @@ require_once 'includes/header.php';
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (count($reportData) > 0): ?>
-                        <?php foreach ($reportData as $row): ?>
+                    <?php if (count($reportData) > 0): 
+ foreach ($reportData as $row): ?>
                             <tr>
                                 <td class="ps-4">
                                     <span class="fw-bold text-primary"><?= htmlspecialchars($row['no_sap']) ?></span>
@@ -165,8 +164,8 @@ require_once 'includes/header.php';
                                     <div class="small fw-semibold text-secondary fst-italic"><?= htmlspecialchars($row['nama_hd'] ?? '-') ?></div>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+                        <?php endforeach; 
+ else: ?>
                         <tr>
                             <td colspan="6" class="text-center py-5">
                                 <p class="text-muted fw-medium mb-0">Tiada rekod dijumpai untuk batch ini.</p>

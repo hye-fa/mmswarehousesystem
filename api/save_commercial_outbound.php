@@ -70,7 +70,9 @@ try {
     }
 
     // Rekod log audit sistem
-    log_system_activity("Processed Commercial Outbound", "outbound_logs", $out_id, "Outbound Komersial diproses: Rujukan $ref bagi Pelanggan $customer (Lori: $vehicle).");
+    if (function_exists('log_system_activity')) {
+        log_system_activity("Processed Commercial Outbound", "outbound_logs", $out_id, "Outbound Komersial diproses: Rujukan $ref bagi Pelanggan $customer (Lori: $vehicle).");
+    }
 
     $pdo->commit();
     echo "<script>alert('Outbound Recorded!'); window.location.href='../commercial_outbound.php';</script>";

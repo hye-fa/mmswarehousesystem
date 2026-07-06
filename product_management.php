@@ -26,9 +26,7 @@ $sql .= " ORDER BY category ASC, name ASC";
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $products = $stmt->fetchAll();
-?>
 
-<?php
 $page_title = 'Product Management | MMS';
 require_once 'includes/header.php';
 ?>
@@ -96,8 +94,8 @@ require_once 'includes/header.php';
                     <tbody>
                         <?php if (empty($products)): ?>
                             <tr><td colspan="7" class="text-center py-5 text-muted">No products found in the catalog.</td></tr>
-                        <?php else: ?>
-                            <?php foreach($products as $p): ?>
+                        <?php else: 
+ foreach($products as $p): ?>
                             <tr>
                                 <td class="ps-4">
                                     <div class="d-flex align-items-center">
@@ -141,8 +139,8 @@ require_once 'includes/header.php';
                                     </button>
                                 </td>
                             </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                            <?php endforeach; 
+ endif; ?>
                     </tbody>
                 </table>
             </div>

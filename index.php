@@ -38,8 +38,7 @@ try {
     $expiring_batches = [];
     $low_stock_products = [];
 }
-?>
-<?php
+
 $page_title = 'MMS Master Hub | Susumura';
 require_once 'includes/header.php';
 ?>
@@ -206,10 +205,10 @@ require_once 'includes/header.php';
     <div class="container-fluid px-4">
         <div class="row align-items-center">
             <div class="col-md-8 d-flex flex-column flex-md-row align-items-center gap-3 text-center text-md-start">
-                <img src="uploads/logo.png" alt="MMS Logo" style="height: 60px; width: auto; border-radius: 12px; border: 2.5px solid rgba(255,255,255,0.25); box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+                <img src="img/logo.png" alt="MMS Logo" style="height: 60px; width: auto; border-radius: 12px; border: 2.5px solid rgba(255,255,255,0.25); box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
                 <div>
-                    <h1 class="fw-800 mb-0" style="font-size: 2.1rem; letter-spacing: -0.5px;">MMS MASTER HUB</h1>
-                    <p class="opacity-75 mb-0 fw-light" style="font-size: 0.92rem;">Warehouse Management & Logistics Command Center</p>
+                    <h1 class="fw-800 mb-0" style="font-size: 2.1rem; letter-spacing: -0.5px;" data-lang="dash_title">MMS MASTER HUB</h1>
+                    <p class="opacity-75 mb-0 fw-light" style="font-size: 0.92rem;" data-lang="dash_subtitle">Warehouse Management & Logistics Command Center</p>
                 </div>
             </div>
             <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
@@ -230,7 +229,7 @@ require_once 'includes/header.php';
                     <i class="bi bi-box-seam-fill"></i>
                 </div>
                 <div>
-                    <div class="stat-label">Active SKUs</div>
+                    <div class="stat-label" data-lang="dash_active_skus">Active SKUs</div>
                     <div class="stat-value text-dark"><?= $total_products ?></div>
                     <div class="progress mt-3" style="height: 6px;">
                         <div class="progress-bar bg-primary" style="width: 100%"></div>
@@ -245,9 +244,9 @@ require_once 'includes/header.php';
                     <i class="bi bi-stack"></i>
                 </div>
                 <div>
-                    <div class="stat-label">Total Stock (Units)</div>
+                    <div class="stat-label" data-lang="dash_total_stock">Total Stock (Units)</div>
                     <div class="stat-value text-dark"><?= number_format($total_stock) ?></div>
-                    <div class="text-success small fw-bold mt-2">
+                    <div class="text-success small fw-bold mt-2" data-lang="dash_live_inv">
                         <i class="bi bi-arrow-up-short"></i> Live Inventory
                     </div>
                 </div>
@@ -260,12 +259,12 @@ require_once 'includes/header.php';
                     <i class="bi bi-exclamation-octagon-fill"></i>
                 </div>
                 <div>
-                    <div class="stat-label">Pending Spoilage</div>
+                    <div class="stat-label" data-lang="dash_pending_spoil">Pending Spoilage</div>
                     <div class="stat-value text-danger"><?= $pending_spoilage ?></div>
                     <?php if($pending_spoilage > 0): ?>
-                        <div class="badge bg-danger-subtle text-danger rounded-pill mt-2">Action Required</div>
+                        <div class="badge bg-danger-subtle text-danger rounded-pill mt-2" data-lang="dash_action_req">Action Required</div>
                     <?php else: ?>
-                        <div class="badge bg-success-subtle text-success rounded-pill mt-2">System Healthy</div>
+                        <div class="badge bg-success-subtle text-success rounded-pill mt-2" data-lang="dash_sys_healthy">System Healthy</div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -285,7 +284,7 @@ require_once 'includes/header.php';
         <div class="<?= $col_class ?> mb-4">
             <div class="card shadow-sm border-0 border-start border-warning border-5 h-100" style="border-radius: 16px; overflow: hidden;">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                    <h6 class="fw-800 text-warning mb-0"><i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>EXPIRY RISK MONITOR (FEFO CONTROL)</h6>
+                    <h6 class="fw-800 text-warning mb-0"><i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i><span data-lang="dash_expiry_title">EXPIRY RISK MONITOR (FEFO CONTROL)</span></h6>
                     <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill"><?= count($expiring_batches) ?> Batch</span>
                 </div>
                 <div class="card-body p-0" style="max-height: 380px; overflow-y: auto;">
@@ -293,11 +292,11 @@ require_once 'includes/header.php';
                         <table class="table table-hover align-middle mb-0" style="font-size: 0.82rem;">
                             <thead class="table-light">
                                 <tr class="text-secondary small fw-bold">
-                                    <th class="ps-3">Produk</th>
-                                    <th>Batch No</th>
-                                    <th class="text-center">Baki</th>
-                                    <th class="text-center">Hari Lagi</th>
-                                    <th class="text-center pe-3">Risiko</th>
+                                    <th class="ps-3" data-lang="dash_product">Produk</th>
+                                    <th data-lang="dash_batch_no">Batch No</th>
+                                    <th class="text-center" data-lang="dash_balance">Baki</th>
+                                    <th class="text-center" data-lang="dash_days_left">Hari Lagi</th>
+                                    <th class="text-center pe-3" data-lang="dash_risk">Risiko</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -330,23 +329,23 @@ require_once 'includes/header.php';
         <div class="<?= $col_class ?> mb-4">
             <div class="card shadow-sm border-0 border-start border-danger border-5 h-100" style="border-radius: 16px; overflow: hidden;">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                    <h6 class="fw-800 text-danger mb-0"><i class="bi bi-cart-x-fill me-2 fs-5"></i>LOW STOCK ALERTS (< 50 CTN)</h6>
+                    <h6 class="fw-800 text-danger mb-0"><i class="bi bi-cart-x-fill me-2 fs-5"></i><span data-lang="dash_low_stock_title">LOW STOCK ALERTS (< 50 CTN)</span></h6>
                     <span class="badge bg-danger text-white fw-bold px-3 py-2 rounded-pill"><?= count($low_stock_products) ?> Item</span>
                 </div>
                 <div class="card-body p-0" style="max-height: 380px; overflow-y: auto;">
                     <?php if (empty($low_stock_products)): ?>
                         <div class="text-center py-5 text-muted">
                             <i class="bi bi-check-circle-fill text-success fs-1 mb-2"></i>
-                            <p class="mb-0 fw-bold">Semua baki stok berada di tahap selamat.</p>
+                            <p class="mb-0 fw-bold" data-lang="dash_stock_ok">Semua baki stok berada di tahap selamat.</p>
                         </div>
                     <?php else: ?>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0" style="font-size: 0.82rem;">
                                 <thead class="table-light">
                                     <tr class="text-secondary small fw-bold">
-                                        <th class="ps-3">Nama Produk</th>
-                                        <th>Kategori</th>
-                                        <th class="text-end pe-4">Jumlah Baki</th>
+                                        <th class="ps-3" data-lang="dash_product">Nama Produk</th>
+                                        <th data-lang="dash_category">Kategori</th>
+                                        <th class="text-end pe-4" data-lang="dash_balance">Jumlah Baki</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -377,88 +376,169 @@ require_once 'includes/header.php';
     <?php endif; ?>
 
     <div class="row g-4">
-        <div class="col-lg-4">
-            <div class="section-title">Logistics & Supply</div>
+        <!-- SEKSYEN 1: GUDANG & INVENTORI -->
+        <div class="col-xl-3 col-md-6">
+            <div class="section-title" data-lang="sec_stock_receiving">Gudang & Inventori</div>
+            
+            <?php if ($is_staff): ?>
             <a href="receiving_multi.php" class="nav-card">
-                <div class="icon-box bg-primary text-white"><i class="bi bi-arrow-down-left-square"></i></div>
+                <div class="icon-box bg-primary text-white"><i class="bi bi-boxes"></i></div>
                 <div class="content">
-                    <span class="title">Stock Receiving</span>
-                    <span class="desc">Log new incoming batches & tally pallets.</span>
+                    <span class="title" data-lang="card_multi_receive">Multi-Item Receive</span>
+                    <span class="desc" data-lang="card_multi_receive_d">Terima stok secara pukal & tetapan pallet.</span>
                 </div>
             </a>
+            <a href="receiving.php" class="nav-card">
+                <div class="icon-box bg-primary-subtle text-primary"><i class="bi bi-box-arrow-in-down"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="card_single_receive">Single Item Receive</span>
+                    <span class="desc" data-lang="card_single_receive_d">Terima produk tunggal dengan kod bar.</span>
+                </div>
+            </a>
+            <a href="stock_transfer.php" class="nav-card">
+                <div class="icon-box bg-info text-white"><i class="bi bi-arrow-left-right"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="card_stock_transfer">Stock Transfer</span>
+                    <span class="desc" data-lang="card_stock_transfer_d">Pindahkan stok antara lokasi gudang.</span>
+                </div>
+            </a>
+            <a href="stock_take.php" class="nav-card">
+                <div class="icon-box bg-secondary text-white"><i class="bi bi-clipboard-check"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="card_stock_take">Stock Take / Opname</span>
+                    <span class="desc" data-lang="card_stock_take_d">Audit fizikal stok & penyelarasan inventori.</span>
+                </div>
+            </a>
+            <?php else: ?>
+            <div class="p-3 text-muted text-center border rounded-3 bg-light bg-opacity-50 small">
+                <i class="bi bi-lock me-1"></i> Akses dihadkan untuk Staff sahaja
+            </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- SEKSYEN 2: LOGISTIK & OUTBOUND -->
+        <div class="col-xl-3 col-md-6">
+            <div class="section-title" data-lang="sec_operations">Logistik & Outbound</div>
+            
+            <?php if ($is_staff): ?>
             <a href="commercial_outbound.php" class="nav-card border-start border-primary border-4">
                 <div class="icon-box bg-info text-white"><i class="bi bi-truck-flatbed"></i></div>
                 <div class="content">
-                    <span class="title">Commercial Outbound</span>
-                    <span class="desc">Wholesale & retail distribution out.</span>
+                    <span class="title" data-lang="card_comm_out">Commercial Outbound</span>
+                    <span class="desc" data-lang="card_comm_out_d">Stok keluar untuk jualan komersial.</span>
                 </div>
             </a>
-            <a href="inventory_report.php" class="nav-card">
-                <div class="icon-box bg-dark text-white"><i class="bi bi-graph-up-arrow"></i></div>
+            <?php endif; ?>
+            
+            <a href="pss_delivery.php" class="nav-card">
+                <div class="icon-box bg-success text-white"><i class="bi bi-mortarboard-fill"></i></div>
                 <div class="content">
-                    <span class="title">Stock Analysis</span>
-                    <span class="desc">Live balance & expiry tracking.</span>
+                    <span class="title" data-lang="card_pss_delivery">School Delivery (PSS)</span>
+                    <span class="desc" data-lang="card_pss_delivery_d">Proses dokumen DO bagi projek Susu Sekolah.</span>
+                </div>
+            </a>
+            <a href="outbound_history.php" class="nav-card">
+                <div class="icon-box bg-dark text-white"><i class="bi bi-clock-history"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="card_out_hist">Outbound History</span>
+                    <span class="desc" data-lang="card_out_hist_d">Sejarah penghantaran komersial & sekolah.</span>
                 </div>
             </a>
         </div>
 
-        <div class="col-lg-4">
-            <div class="section-title">PSS School Operations</div>
-            <a href="pss_delivery.php" class="nav-card">
-                <div class="icon-box bg-success text-white"><i class="bi bi-mortarboard"></i></div>
-                <div class="content">
-                    <span class="title">School Delivery</span>
-                    <span class="desc">Process DOs for School Milk project.</span>
-                </div>
-            </a>
-            <a href="import_co_ui.html" class="nav-card">
-                <div class="icon-box bg-warning text-dark"><i class="bi bi-file-earmark-excel"></i></div>
-                <div class="content">
-                    <span class="title">Monthly CO Import</span>
-                    <span class="desc">Generate SAP lists from CSV.</span>
-                </div>
-            </a>
-            <a href="view_batch.php" class="nav-card">
-                <div class="icon-box bg-secondary text-white"><i class="bi bi-clock-history"></i></div>
-                <div class="content">
-                    <span class="title">Batch Archives</span>
-                    <span class="desc">History of generated SAP reports.</span>
-                </div>
-            </a>
-
-            <div class="section-title mt-4">PSS Strategic Hub</div>
+        <!-- SEKSYEN 3: PENGURUSAN PSS -->
+        <div class="col-xl-3 col-md-6">
+            <div class="section-title" data-lang="sec_system_pss">Pengurusan PSS</div>
+            
             <a href="master_hubpss.php" class="nav-card border-start border-info border-4" style="background: #eefbff;">
                 <div class="icon-box bg-info text-white"><i class="bi bi-cpu-fill"></i></div>
                 <div class="content">
-                    <span class="title">PSS Master Hub</span>
-                    <span class="desc">Control center, Excel import & Trip engine.</span>
+                    <span class="title" data-lang="card_pss_hub">PSS Master Hub</span>
+                    <span class="desc" data-lang="card_pss_hub_d">Pusat kawalan sekolah, trip & import data.</span>
+                </div>
+            </a>
+            <a href="import_co_ui.php" class="nav-card">
+                <div class="icon-box bg-warning text-dark"><i class="bi bi-file-earmark-excel"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="card_co_import">Monthly CO Import</span>
+                    <span class="desc" data-lang="card_co_import_d">Import data CO & jana fail SAP sekolah.</span>
+                </div>
+            </a>
+            <a href="view_batch.php" class="nav-card">
+                <div class="icon-box bg-secondary text-white"><i class="bi bi-archive"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="card_batch_arch">Batch Archives</span>
+                    <span class="desc" data-lang="card_batch_arch_d">Rekod arkib laporan SAP yang dijana.</span>
+                </div>
+            </a>
+            <a href="import_master.php" class="nav-card">
+                <div class="icon-box bg-success-subtle text-success"><i class="bi bi-file-earmark-spreadsheet"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="import_master_title">Import Master PSS</span>
+                    <span class="desc" data-lang="import_master_desc">Kemas kini data sekolah & kontrak master.</span>
                 </div>
             </a>
         </div>
 
-        <div class="col-lg-4">
-            <div class="section-title">Internal Audit & Data</div>
-            <a href="spoilage_report.php" class="nav-card border-start border-danger border-4">
-                <div class="icon-box bg-danger text-white"><i class="bi bi-patch-exclamation"></i></div>
-                <div class="content">
-                    <span class="title">Spoilage Report</span>
-                    <span class="desc">Log damaged items with photo evidence.</span>
-                </div>
-            </a>
+        <!-- SEKSYEN 4: AUDIT, PENTADBIR & LOG -->
+        <div class="col-xl-3 col-md-6">
+            <div class="section-title" data-lang="sec_reports_audit">Audit, Pentadbir & Log</div>
+            
+            <?php if ($is_staff): ?>
             <a href="reconcile.php" class="nav-card">
                 <div class="icon-box bg-warning-subtle text-warning-emphasis"><i class="bi bi-shield-shaded"></i></div>
                 <div class="content">
-                    <span class="title">Daily Reconcile</span>
-                    <span class="desc">Audit System stock vs Physical invoice.</span>
+                    <span class="title" data-lang="card_reconcile">Daily Reconcile</span>
+                    <span class="desc" data-lang="card_reconcile_d">Audit bil fizikal lori vs rekod stok keluar.</span>
+                </div>
+            </a>
+            <?php endif; ?>
+
+            <a href="spoilage_report.php" class="nav-card">
+                <div class="icon-box bg-danger text-white"><i class="bi bi-patch-exclamation"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="card_spoilage_rep">Report Spoilage</span>
+                    <span class="desc" data-lang="card_spoilage_rep_d">Rekod stok rosak/tamat tempoh dengan foto.</span>
+                </div>
+            </a>
+            <a href="spoilage_list.php" class="nav-card">
+                <div class="icon-box bg-danger-subtle text-danger"><i class="bi bi-list-ul"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="card_spoilage_list">Spoilage Logs</span>
+                    <span class="desc" data-lang="card_spoilage_list_d">Senarai tuntutan kerosakan & status tuntutan.</span>
+                </div>
+            </a>
+            <a href="reports.php" class="nav-card">
+                <div class="icon-box bg-primary text-white"><i class="bi bi-graph-up-arrow"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="card_wh_monitor">Warehouse Monitor</span>
+                    <span class="desc" data-lang="card_wh_monitor_d">Carta alir gudang & status bebanan pallet.</span>
                 </div>
             </a>
             <a href="product_management.php" class="nav-card">
                 <div class="icon-box bg-primary-subtle text-primary"><i class="bi bi-database-fill-gear"></i></div>
                 <div class="content">
-                    <span class="title">Master Data</span>
-                    <span class="desc">Manage SKUs, specs and categories.</span>
+                    <span class="title" data-lang="card_master_data">Master Data SKUs</span>
+                    <span class="desc" data-lang="card_master_data_d">Uruskan senarai produk & spesifikasi UOM.</span>
                 </div>
             </a>
+            
+            <?php if ($is_admin): ?>
+            <a href="user_management.php" class="nav-card border-start border-success border-3">
+                <div class="icon-box bg-success text-white"><i class="bi bi-people-fill"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="card_user_mgmt">User Management</span>
+                    <span class="desc" data-lang="card_user_mgmt_d">Uruskan akaun kakitangan & peranan.</span>
+                </div>
+            </a>
+            <a href="system_logs.php" class="nav-card border-start border-danger border-3">
+                <div class="icon-box bg-danger text-white"><i class="bi bi-shield-fill-check"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="card_sys_logs">System Audit Trail</span>
+                    <span class="desc" data-lang="card_sys_logs_d">Jejak sejarah aktiviti pengguna sistem.</span>
+                </div>
+            </a>
+            <?php endif; ?>
         </div>
     </div>
 </div>

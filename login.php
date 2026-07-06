@@ -39,7 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['role']      = $user['role']; // cth: 'admin', 'dealer', dll.
                     $_SESSION['full_name'] = $user['full_name'];
 
-                    log_system_activity("User Logged In", "users_hub", $user['id'], "Pengguna '{$user['username']}' berjaya log masuk dari IP {$_SERVER['REMOTE_ADDR']}.");
+                    if (function_exists('log_system_activity')) {
+                        log_system_activity("User Logged In", "users_hub", $user['id'], "Pengguna '{$user['username']}' berjaya log masuk dari IP {$_SERVER['REMOTE_ADDR']}.");
+                    }
 
                     header('Location: index.php');
                     exit;
@@ -62,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WMS Login | Moo Moo Supplies</title>
     <!-- Favicon / Gambar Browser Logo -->
-    <link rel="shortcut icon" href="uploads/logo.png" type="image/png">
+    <link rel="shortcut icon" href="img/logo.png" type="image/png">
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
@@ -185,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="login-card text-center">
         
         <div class="mb-4">
-            <img src="uploads/logo.png" alt="MMS Logo" style="width: 110px; height: auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(2, 132, 199, 0.25); border: 2px solid rgba(255, 255, 255, 0.1);">
+            <img src="img/logo.png" alt="MMS Logo" style="width: 110px; height: auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(2, 132, 199, 0.25); border: 2px solid rgba(255, 255, 255, 0.1);">
         </div>
         
         <h3 class="fw-800 text-white mb-1" style="letter-spacing: -0.5px;">MOO MOO SUPPLIES</h3>

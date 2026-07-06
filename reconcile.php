@@ -23,9 +23,8 @@ $sql_recon = "SELECT * FROM daily_reconciliation WHERE date = ? AND category = '
 $stmt = $pdo->prepare($sql_recon);
 $stmt->execute([$date]);
 $saved = $stmt->fetch();
-?>
 
-<?php
+
 $page_title = 'Stock Reconciliation | MMS';
 require_once 'includes/header.php';
 ?>

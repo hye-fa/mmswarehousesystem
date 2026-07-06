@@ -6,9 +6,8 @@ require_once 'config/db.php';
 
 // Fetch Commercial Products (Excluding PSS for internal use)
 $products = $pdo->query("SELECT id, name, category FROM products WHERE category != 'PSS' AND is_active=1 ORDER BY name ASC")->fetchAll();
-?>
 
-<?php
+
 $page_title = 'Commercial Outbound | MMS LOGISTIK';
 require_once 'includes/header.php';
 ?>

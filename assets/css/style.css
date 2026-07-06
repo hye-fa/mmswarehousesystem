@@ -225,7 +225,7 @@ body {
 /* Custom Table Polish */
 .table-responsive {
     border-radius: var(--border-radius-lg);
-    overflow: hidden;
+    overflow-x: auto;
     border: 1px solid rgba(241, 245, 249, 0.9);
 }
 
@@ -372,5 +372,64 @@ body {
         border-radius: var(--border-radius-lg);
         overflow: hidden;
         box-shadow: var(--card-shadow);
+    }
+
+    /* Responsive Table to Cards conversion */
+    .responsive-table-cards table, 
+    .responsive-table-cards thead, 
+    .responsive-table-cards tbody, 
+    .responsive-table-cards th, 
+    .responsive-table-cards td, 
+    .responsive-table-cards tr { 
+        display: block !important; 
+    }
+    
+    .responsive-table-cards table {
+        min-width: 100% !important;
+    }
+    
+    .responsive-table-cards thead tr { 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    .responsive-table-cards tr {
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        border-radius: var(--border-radius-lg);
+        margin-bottom: 1.2rem;
+        padding: 1.2rem;
+        background: #ffffff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        position: relative;
+    }
+    
+    .responsive-table-cards td { 
+        border: none !important;
+        border-bottom: 1px dashed #e2e8f0 !important; 
+        position: relative;
+        padding: 10px 0 !important;
+        text-align: left !important;
+    }
+    
+    .responsive-table-cards td:last-child {
+        border-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    
+    .responsive-table-cards td:before { 
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 800;
+        content: attr(data-label);
+        font-size: 0.72rem;
+        color: var(--mms-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Fix Select2 inside stacked table cards */
+    .responsive-table-cards .select2-container {
+        width: 100% !important;
     }
 }

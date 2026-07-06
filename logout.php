@@ -8,7 +8,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 if (isset($_SESSION['user_id'])) {
     require_once 'config/db.php';
-    log_system_activity("User Logged Out", "users_hub", $_SESSION['user_id'], "Pengguna '{$_SESSION['username']}' log keluar secara manual.");
+    if (function_exists('log_system_activity')) {
+        log_system_activity("User Logged Out", "users_hub", $_SESSION['user_id'], "Pengguna '{$_SESSION['username']}' log keluar secara manual.");
+    }
 }
 
 $_SESSION = array();

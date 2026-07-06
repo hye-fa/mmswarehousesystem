@@ -19,9 +19,8 @@ $sql = "
 $stock_items = $pdo->query($sql)->fetchAll();
 
 $current_cat = '';
-?>
 
-<?php
+
 $page_title = 'Physical Stock Take';
 require_once 'includes/header.php';
 ?>
@@ -69,9 +68,9 @@ require_once 'includes/header.php';
                         <tbody>
                             <?php if (empty($stock_items)): ?>
                                 <tr><td colspan="7" class="text-center p-4">No active stock found.</td></tr>
-                            <?php else: ?>
-                                <?php foreach ($stock_items as $item): ?>
-                                    <?php 
+                            <?php else: 
+ foreach ($stock_items as $item): 
+ 
                                         // Group Header logic
                                         if ($current_cat != $item['category']): 
                                             $current_cat = $item['category'];
@@ -113,8 +112,8 @@ require_once 'includes/header.php';
                                             <input type="hidden" name="adjustments[<?= $item['batch_id'] ?>][system_qty]" value="<?= $item['qty_on_hand'] ?>">
                                         </td>
                                     </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
+                                <?php endforeach; 
+ endif; ?>
                         </tbody>
                     </table>
                 </div>

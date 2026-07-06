@@ -7,9 +7,7 @@ require_once 'config/db.php';
 $stmt = $pdo->prepare("SELECT id, name, category, pack_size, pallet_capacity FROM products");
 $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
 
-<?php
 $page_title = 'Advanced GRN Portal | MMS';
 require_once 'includes/header.php';
 ?>
@@ -97,26 +95,26 @@ require_once 'includes/header.php';
                     </div>
 
                     <div class="section-header mt-4">3. Inbound Item List</div>
-                    <div class="table-responsive">
-                        <table class="table align-middle">
+                    <div class="table-responsive responsive-table-cards">
+                        <table class="table align-middle" style="min-width: 1050px;">
                             <thead class="table-light">
                                 <tr class="small fw-800 text-uppercase">
-                                    <th class="ps-3">Product Description</th>
-                                    <th>Scan / Lot</th>
-                                    <th>Expiry</th>
-                                    <th width="70">Batch</th>
-                                    <th width="110">Qty (Pcs)</th>
-                                    <th width="100">Qty (Ctn)</th>
-                                    <th>Pallet</th>
-                                    <th width="80">P.Qty</th>
-                                    <th></th>
+                                    <th class="ps-3" style="min-width: 250px;">Product Description</th>
+                                    <th style="min-width: 180px;">Scan / Lot</th>
+                                    <th style="min-width: 130px;">Expiry</th>
+                                    <th style="width: 80px; min-width: 80px;">Batch</th>
+                                    <th style="width: 110px; min-width: 110px;">Qty (Pcs)</th>
+                                    <th style="width: 100px; min-width: 100px;">Qty (Ctn)</th>
+                                    <th style="min-width: 130px;">Pallet</th>
+                                    <th style="width: 80px; min-width: 80px;">P.Qty</th>
+                                    <th style="width: 50px;"></th>
                                 </tr>
                             </thead>
                             <tbody id="itemsBody"></tbody>
                         </table>
                     </div>
                     <div class="p-3 text-center">
-                        <button type="button" class="btn btn-add w-50" onclick="addRow()">+ Add New Product Row</button>
+                        <button type="button" class="btn btn-add w-100" onclick="addRow()">+ Add New Product Row</button>
                     </div>
                 </div>
             </div>
@@ -187,21 +185,21 @@ require_once 'includes/header.php';
 
         const html = `
             <tr id="row_${id}">
-                <td>
+                <td data-label="Product">
                     <select name="items[${id}][product_id]" id="product_${id}" class="form-select form-select-sm prod-select fw-bold" required style="width: 100%;">
                     </select>
                 </td>
-                <td>
+                <td data-label="Scan / Lot">
                     <div class="input-group input-group-sm">
                         <input type="text" name="items[${id}][lot]" id="scan_input_${id}" class="form-control qr-input" placeholder="Scan/Lot" oninput="parseRowQR(this, ${id})">
                         <button type="button" class="btn btn-outline-secondary" onclick="openCameraForRow(${id})">📷</button>
                     </div>
                 </td>
-                <td><input type="text" name="items[${id}][expiry]" id="expiry_${id}" class="form-control form-control-sm datepicker bg-white"></td>
-                <td><input type="text" name="items[${id}][batch]" id="batch_${id}" class="form-control form-control-sm text-center px-1" placeholder="B1"></td>
-                <td><input type="number" name="items[${id}][qty_pcs]" id="qty_pcs_${id}" class="form-control form-control-sm text-center bg-light px-1" readonly></td>
-                <td><input type="number" name="items[${id}][qty]" id="qty_${id}" class="form-control form-control-sm text-center fw-bold border-primary px-1" required></td>
-                <td>
+                <td data-label="Expiry"><input type="text" name="items[${id}][expiry]" id="expiry_${id}" class="form-control form-control-sm datepicker bg-white"></td>
+                <td data-label="Batch"><input type="text" name="items[${id}][batch]" id="batch_${id}" class="form-control form-control-sm text-center px-1" placeholder="B1"></td>
+                <td data-label="Qty (Pcs)"><input type="number" name="items[${id}][qty_pcs]" id="qty_pcs_${id}" class="form-control form-control-sm text-center bg-light px-1" readonly></td>
+                <td data-label="Qty (Ctn)"><input type="number" name="items[${id}][qty]" id="qty_${id}" class="form-control form-control-sm text-center fw-bold border-primary px-1" required></td>
+                <td data-label="Pallet">
                     <select name="items[${id}][p_type]" class="form-select form-select-sm p-type-sel" onchange="updateHeaderTally()">
                         <option value="none">None</option>
                         <option value="plain">Wood</option>
@@ -212,8 +210,8 @@ require_once 'includes/header.php';
                         <option value="black">Plastic Black</option>
                     </select>
                 </td>
-                <td><input type="number" name="items[${id}][p_qty]" class="form-control form-control-sm p-qty-val text-center fw-bold" value="0" oninput="updateHeaderTally()"></td>
-                <td>
+                <td data-label="P.Qty"><input type="number" name="items[${id}][p_qty]" class="form-control form-control-sm p-qty-val text-center fw-bold" value="0" oninput="updateHeaderTally()"></td>
+                <td data-label="Action">
                     <button type="button" class="btn btn-link text-danger p-0" onclick="document.getElementById('row_${id}').remove(); updateHeaderTally();">
                         <i class="bi bi-trash3-fill"></i>
                     </button>
@@ -269,17 +267,21 @@ require_once 'includes/header.php';
         if (qtyPcsInput && qtyCtnInput && sel && sel.value) {
             let pcs = parseInt(qtyPcsInput.value);
             if (!isNaN(pcs) && pcs > 0) {
-                const optText = sel.options[sel.selectedIndex].text;
-                const match = optText.match(/(\d+)\s*(PK|PCS|PC)\/CTN/i);
-                if (match) {
-                    let packSize = parseInt(match[1]);
-                    if (packSize > 0) {
-                        qtyCtnInput.value = Math.floor(pcs / packSize);
-                        updateHeaderTally();
-                    }
+                const opt = sel.options[sel.selectedIndex];
+                let packSize = parseInt($(opt).data('packsize') || 0);
+                if (packSize > 0) {
+                    qtyCtnInput.value = Math.floor(pcs / packSize);
+                    updateHeaderTally();
                 } else {
-                    // Jika tiada maklumat pack size dalam nama produk, letakkan CTN sama dengan PCS atau kosongkan
-                    // qtyCtnInput.value = pcs; 
+                    const optText = opt.text;
+                    const match = optText.match(/(\d+)\s*(PK|PCS|PC)\/CTN/i);
+                    if (match) {
+                        let pSize = parseInt(match[1]);
+                        if (pSize > 0) {
+                            qtyCtnInput.value = Math.floor(pcs / pSize);
+                            updateHeaderTally();
+                        }
+                    }
                 }
             }
         }
@@ -288,7 +290,7 @@ require_once 'includes/header.php';
     let parseTimeout = {};
     function parseRowQR(input, id) {
         const lotString = input.value.trim();
-        if (lotString.length < 10) return;
+        if (lotString.length < 5) return;
 
         clearTimeout(parseTimeout[id]);
         parseTimeout[id] = setTimeout(() => {
@@ -309,19 +311,18 @@ require_once 'includes/header.php';
                 }
                 
                 // Match Product (Dinaiktaraf untuk padanan kod dan nama pintar)
-                if (data.data.product_code) {
-                    const sel = document.querySelector(`#row_${id} .prod-select`);
-                    if (sel) {
+                const sel = document.querySelector(`#row_${id} .prod-select`);
+                let matched = false;
+                if (sel) {
+                    if (data.data.product_id) {
+                        sel.value = data.data.product_id;
+                        matched = true;
+                    } else if (data.data.product_code) {
                         let pCode = String(data.data.product_code).toUpperCase();
-                        // Extract numeric size properly (e.g., "0200" -> "200")
                         let sizeMatch = pCode.match(/^0*(\d+)/);
                         let numericSize = sizeMatch ? sizeMatch[1] : ""; 
-                        
-                        // Extract flavor letters after the numeric part (e.g., "0200S24F" -> "S24F" -> "SF")
                         let suffix = pCode.replace(/^\d+/, '');
                         
-                        let matched = false;
-
                         for (let opt of sel.options) {
                             let optText = opt.text.toUpperCase();
                             
@@ -353,7 +354,6 @@ require_once 'includes/header.php';
                                     matched = true;
                                     break;
                                 } else if (!suffix.includes('C') && !suffix.includes('S') && !suffix.includes('F') && !suffix.includes('K') && !suffix.includes('B')) {
-                                    // Fallback if no specific flavor letter is found
                                     sel.value = opt.value;
                                     matched = true;
                                     break;
@@ -370,6 +370,8 @@ require_once 'includes/header.php';
                                 }
                             }
                         }
+                    }
+                    if (matched) {
                         $(sel).trigger('change');
                     }
                 }
@@ -395,9 +397,7 @@ require_once 'includes/header.php';
                     const raw = String(data.data.pallet_raw_code || '').toUpperCase();
                     const pSel = document.querySelector(`#row_${id} .p-type-sel`);
                     if (pSel) {
-                        if (raw.startsWith('PP') || raw.startsWith('PB') || raw.startsWith('PH')) {
-                            pSel.value = 'black';
-                        } else if (raw.startsWith('PW') || raw.startsWith('PM')) {
+                        if (raw.startsWith('PW') || raw.startsWith('PM')) {
                             pSel.value = 'plain';
                         } else if (raw.startsWith('LR') || raw.startsWith('PR')) {
                             pSel.value = 'red';
@@ -407,6 +407,8 @@ require_once 'includes/header.php';
                             pSel.value = 'orange';
                         } else if (raw.startsWith('FG')) {
                             pSel.value = 'ffm';
+                        } else if (raw.startsWith('P')) { // Default any other P prefix (like PA, PK, PL, PN, PI, PJ, PE, PP, PB, PH) to Plastic Black
+                            pSel.value = 'black';
                         }
                     }
                 }

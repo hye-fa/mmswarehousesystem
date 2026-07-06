@@ -19,9 +19,8 @@ try {
 } catch (PDOException $e) {
     die("Database Error: " . $e->getMessage());
 }
-?>
 
-<?php
+
 $page_title = 'MMS | Damage & Spoilage Report';
 require_once 'includes/header.php';
 ?>

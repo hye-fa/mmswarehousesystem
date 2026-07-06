@@ -138,7 +138,9 @@ try {
     $stmtLogistik->execute([$delivery_date, $school_code]);
 
     // Rekod log audit sistem
-    log_system_activity("Created PSS DO", "deliveries_pss", $delivery_id, "DO PSS dicipta: $do_number bagi Sekolah $school_code ($qty_cartons ctn) bertarikh $delivery_date.");
+    if (function_exists('log_system_activity')) {
+        log_system_activity("Created PSS DO", "deliveries_pss", $delivery_id, "DO PSS dicipta: $do_number bagi Sekolah $school_code ($qty_cartons ctn) bertarikh $delivery_date.");
+    }
 
     $pdo->commit();
 

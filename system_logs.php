@@ -83,8 +83,8 @@ require_once 'includes/header.php';
                                 <p class="mb-0 fw-bold">Tiada data log sistem ditemui.</p>
                             </td>
                         </tr>
-                    <?php else: ?>
-                        <?php foreach($logs as $row): 
+                    <?php else: 
+ foreach($logs as $row): 
                             $badge_color = 'bg-secondary';
                             $action = $row['action'];
                             if (stripos($action, 'created') !== false || stripos($action, 'received') !== false) {
@@ -112,18 +112,14 @@ require_once 'includes/header.php';
                             <td class="fw-medium text-dark"><?= htmlspecialchars($row['details'] ?: 'Tiada keterangan') ?></td>
                             <td class="text-center text-muted font-monospace" style="font-size: 0.8rem;"><?= htmlspecialchars($row['ip_address']) ?></td>
                         </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                        <?php endforeach; 
+ endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
     $(document).ready(function() {

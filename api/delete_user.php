@@ -55,7 +55,9 @@ try {
     $stmtDelete = $pdo->prepare("DELETE FROM users_hub WHERE id = ?");
     $stmtDelete->execute([$user_id]);
 
-    log_system_activity("Deleted User", "users_hub", $user_id, "Memadam akaun pengguna '$username' daripada sistem.");
+    if (function_exists('log_system_activity')) {
+        log_system_activity("Deleted User", "users_hub", $user_id, "Memadam akaun pengguna '$username' daripada sistem.");
+    }
     echo json_encode(['success' => "Akaun '$username' berjaya dipadam."]);
 
 } catch (Exception $e) {

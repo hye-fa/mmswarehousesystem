@@ -89,7 +89,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmtStock->execute([$product_id, $batch_no, $lot_no, $expiry_date, $qty, $p_type, $pallet_id]);
 
             // 4. Rekod log aktiviti sistem
-            log_system_activity("Received Stock (Single)", "inbound_logs", $inbound_id, "Single GRN diproses: ID $inbound_id, Rujukan $supplier_do (Qty: $qty ctn).");
+            if (function_exists('log_system_activity')) {
+                log_system_activity("Received Stock (Single)", "inbound_logs", $inbound_id, "Single GRN diproses: ID $inbound_id, Rujukan $supplier_do (Qty: $qty ctn).");
+            }
 
             $pdo->commit();
             $message = '<div class="alert alert-success border-0 shadow-sm"><i class="bi bi-check-circle-fill me-2"></i>Stok berjaya diterima! (GRN ID: ' . $inbound_id . ')</div>';
@@ -243,7 +245,6 @@ require_once 'includes/header.php';
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
     const productList = <?= json_encode($products); ?>;
@@ -277,7 +278,7 @@ require_once 'includes/header.php';
         
         productList.forEach(p => {
             if (p.category === cat) {
-                sel.append(`<option value="${p.id}" data-cat="${p.category}">${p.name}</option>`);
+                sel.append(`<option value="${p.id}" data-cat="${p.category}" data-packsize="${p.pack_size}">${p.name}</option>`);
             }
         });
         
@@ -290,7 +291,7 @@ require_once 'includes/header.php';
     let parseTimeout;
     function parseLotNo() {
         let lotString = document.getElementById('lot_no').value.trim();
-        if (lotString.length < 10) return;
+        if (lotString.length < 5) return;
 
         clearTimeout(parseTimeout);
         parseTimeout = setTimeout(() => {
@@ -302,21 +303,6 @@ require_once 'includes/header.php';
                     // Isi Batch No & Expiry Date
                     document.getElementById('batch_no').value = data.data.batch || '';
                     document.getElementById('pallet_id').value = data.data.pallet_raw_code || '';
-                    if (data.data.qty_pieces && data.data.qty_pieces > 0) {
-                        let finalQty = data.data.qty_pieces;
-                        const sel = document.getElementById('product_id');
-                        if (sel && sel.value) {
-                            const optText = sel.options[sel.selectedIndex].text;
-                            const match = optText.match(/(\d+)\s*(PK|PCS|PC)\/CTN/i);
-                            if (match) {
-                                let packSize = parseInt(match[1]);
-                                if (packSize > 0) {
-                                    finalQty = Math.floor(data.data.qty_pieces / packSize);
-                                }
-                            }
-                        }
-                        document.querySelector('input[name="qty"]').value = finalQty;
-                    }
                     
                     // Expiry Date format conversion (d/m/Y -> Y-m-d untuk input type="date")
                     if (data.data.expiry_date) {
@@ -334,13 +320,15 @@ require_once 'includes/header.php';
                     }
 
                     // Padanan Produk Pintar
-                    if (data.data.product_code) {
+                    let matched = false;
+                    const sel = document.getElementById('product_id');
+                    if (data.data.product_id) {
+                        $('#product_id').val(data.data.product_id).trigger('change');
+                        matched = true;
+                    } else if (data.data.product_code) {
                         let pCode = String(data.data.product_code).toUpperCase();
                         let numericSize = pCode.replace(/[^0-9]/g, '');
                         numericSize = parseInt(numericSize, 10).toString();
-                        
-                        let matched = false;
-                        const sel = document.getElementById('product_id');
 
                         for (let opt of sel.options) {
                             let optText = opt.text.toUpperCase();
@@ -396,6 +384,28 @@ require_once 'includes/header.php';
                                 }
                             }
                         }
+                    }
+
+                    // Kira Kuantiti Carton selepas Produk Dipilih untuk memastikan pack size yang betul
+                    if (data.data.qty_pieces && data.data.qty_pieces > 0) {
+                        let finalQty = data.data.qty_pieces;
+                        if (sel && sel.value) {
+                            const opt = sel.options[sel.selectedIndex];
+                            let packSize = parseInt($(opt).data('packsize') || 0);
+                            if (packSize > 0) {
+                                finalQty = Math.floor(data.data.qty_pieces / packSize);
+                            } else {
+                                const optText = opt.text;
+                                const match = optText.match(/(\d+)\s*(PK|PCS|PC)\/CTN/i);
+                                if (match) {
+                                    let pSize = parseInt(match[1]);
+                                    if (pSize > 0) {
+                                        finalQty = Math.floor(data.data.qty_pieces / pSize);
+                                    }
+                                }
+                            }
+                        }
+                        document.querySelector('input[name="qty"]').value = finalQty;
                     }
                 }
             })
