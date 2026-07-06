@@ -2,6 +2,25 @@
 // product_management.php - MASTER PRODUCT CATALOG (UPGRADED INTERFACE)
 require_once 'config/db.php';
 
+// Handle product updates (Edit Product Form POST)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'edit_product') {
+    $product_id = (int)$_POST['id'];
+    $barcode = trim($_POST['barcode']);
+    $qrcode = trim($_POST['qrcode']);
+    $category = trim($_POST['category']);
+    $uom = trim($_POST['uom']);
+    $pack_size = (int)$_POST['pack_size'];
+    $pallet_capacity = (int)$_POST['pallet_capacity'];
+    
+    try {
+        $stmt = $pdo->prepare("UPDATE products SET barcode = ?, qrcode = ?, category = ?, uom = ?, pack_size = ?, pallet_capacity = ? WHERE id = ?");
+        $stmt->execute([$barcode, $qrcode, $category, $uom, $pack_size, $pallet_capacity, $product_id]);
+        $success_msg = "Product updated successfully!";
+    } catch (PDOException $e) {
+        $error_msg = "Database error: " . $e->getMessage();
+    }
+}
+
 // Handle status toggles
 if (isset($_GET['toggle_id'])) {
     $stmt = $pdo->prepare("UPDATE products SET is_active = NOT is_active WHERE id = ?");
@@ -47,6 +66,16 @@ require_once 'includes/header.php';
 </div>
 
 <div class="container-fluid px-4 pb-5">
+    <?php if (isset($success_msg)): ?>
+        <div class="alert alert-success border-0 shadow-sm mb-3">
+            <i class="bi bi-check-circle-fill me-2 text-success"></i><?= htmlspecialchars($success_msg) ?>
+        </div>
+    <?php endif; ?>
+    <?php if (isset($error_msg)): ?>
+        <div class="alert alert-danger border-0 shadow-sm mb-3">
+            <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i><?= htmlspecialchars($error_msg) ?>
+        </div>
+    <?php endif; ?>
     
     <div class="card main-card border-0 mb-4">
         <div class="card-body p-3">
@@ -85,6 +114,8 @@ require_once 'includes/header.php';
                             <th class="ps-4">Product Info</th>
                             <th>Category</th>
                             <th class="text-center">UOM</th>
+                            <th>Barcode</th>
+                            <th>QR Code</th>
                             <th class="text-center">Pack Size</th>
                             <th class="text-center">Pallet Cap</th>
                             <th class="text-center">Status</th>
@@ -93,9 +124,9 @@ require_once 'includes/header.php';
                     </thead>
                     <tbody>
                         <?php if (empty($products)): ?>
-                            <tr><td colspan="7" class="text-center py-5 text-muted">No products found in the catalog.</td></tr>
+                            <tr><td colspan="9" class="text-center py-5 text-muted">No products found in the catalog.</td></tr>
                         <?php else: 
- foreach($products as $p): ?>
+                            foreach($products as $p): ?>
                             <tr>
                                 <td class="ps-4">
                                     <div class="d-flex align-items-center">
@@ -111,6 +142,12 @@ require_once 'includes/header.php';
                                 <td><span class="badge badge-cat"><?= htmlspecialchars($p['category']) ?></span></td>
                                 <td class="text-center">
                                     <small class="fw-bold text-uppercase"><?= htmlspecialchars($p['uom']) ?></small>
+                                </td>
+                                <td>
+                                    <small class="font-monospace text-secondary"><?= htmlspecialchars($p['barcode'] ?? '-') ?></small>
+                                </td>
+                                <td>
+                                    <small class="font-monospace text-secondary"><?= htmlspecialchars($p['qrcode'] ?? '-') ?></small>
                                 </td>
                                 <td class="text-center">
                                     <span class="fw-bold text-primary"><?= $p['pack_size'] ?></span>
@@ -134,18 +171,108 @@ require_once 'includes/header.php';
                                        title="<?= $p['is_active'] ? 'Deactivate' : 'Activate' ?>">
                                         <i class="bi <?= $p['is_active'] ? 'bi-lock' : 'bi-unlock' ?>"></i>
                                     </a>
-                                    <button class="btn btn-sm btn-outline-primary" title="Edit Product">
+                                    <button class="btn btn-sm btn-outline-primary" 
+                                            title="Edit Product" 
+                                            onclick="openEditModal(this)"
+                                            data-id="<?= $p['id'] ?>"
+                                            data-name="<?= htmlspecialchars($p['name']) ?>"
+                                            data-category="<?= htmlspecialchars($p['category']) ?>"
+                                            data-uom="<?= htmlspecialchars($p['uom']) ?>"
+                                            data-pack-size="<?= $p['pack_size'] ?>"
+                                            data-pallet-capacity="<?= $p['pallet_capacity'] ?>"
+                                            data-barcode="<?= htmlspecialchars($p['barcode'] ?? '') ?>"
+                                            data-qrcode="<?= htmlspecialchars($p['qrcode'] ?? '') ?>">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                 </td>
                             </tr>
                             <?php endforeach; 
- endif; ?>
+                        endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Edit Product Modal -->
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="product_management.php">
+            <input type="hidden" name="action" value="edit_product">
+            <input type="hidden" name="id" id="edit-id">
+            <div class="modal-content">
+                <div class="modal-header" style="background: var(--gradient-primary); color: white;">
+                    <h5 class="modal-title fw-bold" id="editProductModalLabel"><i class="bi bi-pencil-square me-2 text-cyan"></i>Edit Product Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Product Name</label>
+                        <input type="text" id="edit-name" class="form-control bg-light" readonly>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Category</label>
+                            <input type="text" name="category" id="edit-category" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">UOM</label>
+                            <input type="text" name="uom" id="edit-uom" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Pack Size</label>
+                            <input type="number" name="pack_size" id="edit-pack-size" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Pallet Capacity</label>
+                            <input type="number" name="pallet_capacity" id="edit-pallet-capacity" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Barcode</label>
+                        <input type="text" name="barcode" id="edit-barcode" class="form-control" placeholder="Scan or enter barcode value">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-info">QR Code (Unique SKU ID)</label>
+                        <input type="text" name="qrcode" id="edit-qrcode" class="form-control" placeholder="Enter QR code unique ID (e.g. O2CW1CO-0100S32A)">
+                        <div class="form-text small text-muted">The unique segment of your QR structure (e.g., text after <strong>GGGITN</strong> and before <strong>/BAN</strong>). Example: <code>O2CW1CO-0100S32A</code></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background: var(--mms-navy); border: none;">Save Changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditModal(btn) {
+    const id = $(btn).data('id');
+    const name = $(btn).data('name');
+    const category = $(btn).data('category');
+    const uom = $(btn).data('uom');
+    const packSize = $(btn).data('pack-size');
+    const palletCapacity = $(btn).data('pallet-capacity');
+    const barcode = $(btn).data('barcode');
+    const qrcode = $(btn).data('qrcode');
+    
+    $('#edit-id').val(id);
+    $('#edit-name').val(name);
+    $('#edit-category').val(category);
+    $('#edit-uom').val(uom);
+    $('#edit-pack-size').val(packSize);
+    $('#edit-pallet-capacity').val(palletCapacity);
+    $('#edit-barcode').val(barcode);
+    $('#edit-qrcode').val(qrcode);
+    
+    const myModal = new bootstrap.Modal(document.getElementById('editProductModal'));
+    myModal.show();
+}
+</script>
 
 <?php require_once 'includes/footer.php'; ?>

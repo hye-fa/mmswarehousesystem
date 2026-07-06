@@ -26,23 +26,36 @@ $response = [
     ]
 ];
 
-// 1. Check if the scanned code is an exact match for any product barcode in the DB
-$barcode_matched = false;
+// 1. Check if the scanned code is a match for any product barcode or qrcode in the DB
+$db_matched = false;
 try {
     require_once 'config/db.php';
-    $stmt = $pdo->prepare("SELECT id, name FROM products WHERE barcode = ? AND is_active = 1 LIMIT 1");
-    $stmt->execute([$lot]);
+    
+    // Extract unique ID from QR code format if applicable (starts after GGGITN and before /BAN)
+    $extracted_qrcode = '';
+    if (preg_match('/GG{1,2}ITN(.*?)\/BAN/i', $lot, $m)) {
+        $extracted_qrcode = trim($m[1]);
+    }
+    
+    if ($extracted_qrcode !== '') {
+        $stmt = $pdo->prepare("SELECT id, name, barcode, qrcode FROM products WHERE (qrcode = ? OR barcode = ?) AND is_active = 1 LIMIT 1");
+        $stmt->execute([$extracted_qrcode, $lot]);
+    } else {
+        $stmt = $pdo->prepare("SELECT id, name, barcode, qrcode FROM products WHERE (barcode = ? OR qrcode = ?) AND is_active = 1 LIMIT 1");
+        $stmt->execute([$lot, $lot]);
+    }
+    
     $prod = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($prod) {
         $response['data']['product_id'] = (int)$prod['id'];
-        $response['data']['product_code'] = $lot;
-        $barcode_matched = true;
+        $response['data']['product_code'] = !empty($prod['qrcode']) ? $prod['qrcode'] : (!empty($prod['barcode']) ? $prod['barcode'] : '');
+        $db_matched = true;
     }
 } catch (Exception $e) {
     // Ignore
 }
 
-if ($barcode_matched) {
+if ($db_matched && strpos($lot, '/') === false) {
     echo json_encode($response);
     exit;
 }
@@ -233,34 +246,36 @@ if (strpos($lot, '/') !== false) {
         }
     }
     
-    // 4. Resolve Product ID using mapping
-    $target_name = '';
-    if (isset($product_mapping[$prod_code])) {
-        $rules = $product_mapping[$prod_code];
-        if (isset($rules['UHT']) || isset($rules['PST'])) {
-            $cat_key = ($category === 'PST') ? 'PST' : 'UHT';
-            $rules = isset($rules[$cat_key]) ? $rules[$cat_key] : [];
-        }
-        if (($category === 'PSS') && isset($rules['school'])) {
-            $target_name = $rules['school'];
-        } elseif (isset($rules[$size])) {
-            $target_name = $rules[$size];
-        } elseif (isset($rules['default'])) {
-            $target_name = $rules['default'];
-        }
-    }
-    
-    if ($target_name) {
-        try {
-            require_once 'config/db.php';
-            $stmt = $pdo->prepare("SELECT id FROM products WHERE name LIKE ? AND is_active = 1 LIMIT 1");
-            $stmt->execute(["%" . $target_name . "%"]);
-            $prod = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($prod) {
-                $response['data']['product_id'] = (int)$prod['id'];
+    // 4. Resolve Product ID using mapping (only if not already resolved by DB barcode/qrcode)
+    if ($response['data']['product_id'] === 0) {
+        $target_name = '';
+        if (isset($product_mapping[$prod_code])) {
+            $rules = $product_mapping[$prod_code];
+            if (isset($rules['UHT']) || isset($rules['PST'])) {
+                $cat_key = ($category === 'PST') ? 'PST' : 'UHT';
+                $rules = isset($rules[$cat_key]) ? $rules[$cat_key] : [];
             }
-        } catch (Exception $e) {
-            // Ignore DB errors
+            if (($category === 'PSS') && isset($rules['school'])) {
+                $target_name = $rules['school'];
+            } elseif (isset($rules[$size])) {
+                $target_name = $rules[$size];
+            } elseif (isset($rules['default'])) {
+                $target_name = $rules['default'];
+            }
+        }
+        
+        if ($target_name) {
+            try {
+                require_once 'config/db.php';
+                $stmt = $pdo->prepare("SELECT id FROM products WHERE name LIKE ? AND is_active = 1 LIMIT 1");
+                $stmt->execute(["%" . $target_name . "%"]);
+                $prod = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($prod) {
+                    $response['data']['product_id'] = (int)$prod['id'];
+                }
+            } catch (Exception $e) {
+                // Ignore DB errors
+            }
         }
     }
 } else {
@@ -321,7 +336,7 @@ if (strpos($lot, '/') !== false) {
         $response['data']['pallet_id_short']  = $p_prefix . $p_num;
     }
     
-    if ($prod_code) {
+    if ($response['data']['product_id'] === 0 && $prod_code) {
         $target_name = '';
         if (isset($product_mapping[$prod_code])) {
             $rules = $product_mapping[$prod_code];
