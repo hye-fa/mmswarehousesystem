@@ -25,7 +25,7 @@ The system is organized into four main business modules:
 
 ### 2. Logistics & Outbound Service
 * Manages commercial stock checkouts.
-* Generates PSS Delivery Orders (DOs) automatically based on student enrollment, cycle quotas (TP1 & TP2), registered vehicle plates, and FEFO-based (First-Expired, First-Out) inventory batch matching.
+* Generates PSS Delivery Orders (DOs) automatically based on student enrollment, cycle quotas (TP1 & TP2), registered vehicle plates, and FIFO-based (First-In, First-Out) inventory batch matching.
 * Keeps a unified, searchable log tracking both commercial and PSS shipments.
 
 ### 3. School Milk Contract Management (PSS)
