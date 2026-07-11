@@ -12,6 +12,7 @@ $page_title = 'Commercial Outbound | MMS LOGISTIK';
 require_once 'includes/header.php';
 ?>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
     /* Header Styling */
@@ -107,11 +108,11 @@ require_once 'includes/header.php';
             <h5 class="fw-bold mb-2 text-primary d-flex align-items-center">
                 <i class="bi bi-file-earmark-arrow-up-fill me-2"></i> Import Invoice / DO (Hybrid Importer)
             </h5>
-            <p class="text-muted small mb-3">Muat naik fail invois atau DO harian (format .xlsx, .xls, atau .csv) untuk mengisi senarai produk, kuantiti, tarikh & maklumat pelanggan secara automatik.</p>
+            <p class="text-muted small mb-3">Muat naik fail invois atau DO harian (format .xlsx, .xls, .csv, atau .pdf) untuk mengisi senarai produk, kuantiti, tarikh & maklumat pelanggan secara automatik.</p>
             
             <div class="row align-items-center g-3">
                 <div class="col-md-9 col-sm-8">
-                    <input type="file" id="invoice_file_input" class="form-control form-control-lg border-primary-subtle" accept=".xlsx, .xls, .csv">
+                    <input type="file" id="invoice_file_input" class="form-control form-control-lg border-primary-subtle" accept=".xlsx, .xls, .csv, .pdf">
                 </div>
                 <div class="col-md-3 col-sm-4">
                     <button type="button" id="btn_process_invoice" class="btn btn-primary btn-lg w-100 fw-bold py-2 shadow-sm">
@@ -377,161 +378,272 @@ require_once 'includes/header.php';
         return null;
     }
 
-    document.getElementById('btn_process_invoice').onclick = function() {
+    async function parsePDF(file) {
+        if (typeof pdfjsLib === 'undefined') {
+            throw new Error("Pustaka PDF.js tidak dimuatkan dengan betul.");
+        }
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+        
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let allRows = [];
+        
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const textContent = await page.getTextContent();
+            
+            // Group text items by Y coordinate with a tolerance of 5px
+            const yGroups = [];
+            textContent.items.forEach(item => {
+                const y = item.transform[5];
+                const x = item.transform[4];
+                const text = item.str.trim();
+                if (text === '') return;
+                
+                let group = yGroups.find(g => Math.abs(g.y - y) < 5);
+                if (!group) {
+                    group = { y: y, items: [] };
+                    yGroups.push(group);
+                }
+                group.items.push({ x: x, str: text });
+            });
+            
+            // Sort by Y descending
+            yGroups.sort((a, b) => b.y - a.y);
+            
+            yGroups.forEach(g => {
+                g.items.sort((a, b) => a.x - b.x);
+                const rowText = g.items.map(it => it.str);
+                allRows.push(rowText);
+            });
+        }
+        return allRows;
+    }
+
+    function parseExcelCSV(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    resolve(rows);
+                } catch (err) {
+                    reject(err);
+                }
+            };
+            reader.onerror = err => reject(err);
+            reader.readAsArrayBuffer(file);
+        });
+    }
+
+    document.getElementById('btn_process_invoice').onclick = async function() {
         const fileInput = document.getElementById('invoice_file_input');
         if (!fileInput.files || fileInput.files.length === 0) {
-            Swal.fire('Sila pilih fail', 'Pilih fail Excel (.xlsx, .xls) atau CSV invois terlebih dahulu.', 'warning');
+            Swal.fire('Sila pilih fail', 'Pilih fail Excel, CSV, atau PDF invois terlebih dahulu.', 'warning');
             return;
         }
 
         const file = fileInput.files[0];
         Swal.fire({ title: 'Memproses fail...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        const isPDF = file.name.toLowerCase().endsWith('.pdf');
 
-                if (rows.length < 2) {
-                    throw new Error("Fail kosong atau format tidak sah.");
-                }
+        try {
+            let rows = [];
+            if (isPDF) {
+                rows = await parsePDF(file);
+            } else {
+                rows = await parseExcelCSV(file);
+            }
+            
+            processInvoiceRows(rows, isPDF);
+        } catch (err) {
+            console.error(err);
+            Swal.fire('Ralat Memproses', err.message || 'Gagal menganalisis struktur fail.', 'error');
+        }
+    };
 
-                // Heuristic metadata extraction (Date, Customer Name, DO Number)
-                let docRef = '';
-                let customerName = '';
-                let deliveryDate = '';
+    function processInvoiceRows(rows, isPDF) {
+        if (rows.length < 2) {
+            throw new Error("Fail kosong atau format tidak sah.");
+        }
 
-                for (let r = 0; r < Math.min(rows.length, 15); r++) {
-                    const rowStr = rows[r].map(c => String(c || '').trim().toUpperCase()).join(' | ');
-                    
-                    if (rowStr.includes('BILL TO') || rowStr.includes('CUSTOMER')) {
-                        for (let offset = 1; offset <= 3; offset++) {
-                            if (rows[r+offset]) {
-                                const candidate = rows[r+offset].find(c => String(c || '').trim().length > 10);
-                                if (candidate) {
-                                    customerName = String(candidate).trim();
-                                    break;
-                                }
+        // Heuristic metadata extraction (Date, Customer Name, DO Number)
+        let docRef = '';
+        let customerName = '';
+        let deliveryDate = '';
+
+        for (let r = 0; r < Math.min(rows.length, 15); r++) {
+            const rowStr = rows[r].map(c => String(c || '').trim().toUpperCase()).join(' | ');
+            
+            if (rowStr.includes('BILL TO') || rowStr.includes('CUSTOMER') || rowStr.includes('DELIVERY TO')) {
+                if (isPDF && rows[r+1]) {
+                    customerName = String(rows[r+1][0] || '').trim();
+                } else {
+                    for (let offset = 1; offset <= 3; offset++) {
+                        if (rows[r+offset]) {
+                            const candidate = rows[r+offset].find(c => String(c || '').trim().length > 10);
+                            if (candidate) {
+                                customerName = String(candidate).trim();
+                                break;
                             }
                         }
                     }
-                    
-                    rows[r].forEach(cell => {
-                        const cellStr = String(cell || '').trim();
-                        if (/^(DO|DOTME|INV|INV-)\w+[-/\w]*/i.test(cellStr)) {
-                            docRef = cellStr;
-                        }
-                        const dateMatch = cellStr.match(/(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
-                        if (dateMatch) {
-                            const day = dateMatch[1].padStart(2, '0');
-                            const month = dateMatch[2].padStart(2, '0');
-                            const year = dateMatch[3];
-                            deliveryDate = `${year}-${month}-${day}`;
-                        }
-                    });
                 }
+            }
+            
+            rows[r].forEach(cell => {
+                const cellStr = String(cell || '').trim();
+                if (/^(DO|DOTME|INV|INV-)\w+[-/\w]*/i.test(cellStr)) {
+                    docRef = cellStr;
+                }
+                const dateMatch = cellStr.match(/(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+                if (dateMatch) {
+                    const day = dateMatch[1].padStart(2, '0');
+                    const month = dateMatch[2].padStart(2, '0');
+                    const year = dateMatch[3];
+                    deliveryDate = `${year}-${month}-${day}`;
+                }
+            });
+        }
 
-                // Find Item Table Headers row
-                let headerIndex = -1;
-                let skuCol = -1;
-                let descCol = -1;
-                let qtyCol = -1;
-                let uomCol = -1;
+        // Parse items
+        let importedItems = [];
+        let unmappedCount = 0;
 
-                for (let r = 0; r < rows.length; r++) {
-                    const row = rows[r].map(c => String(c || '').trim().toUpperCase());
-                    if (row.includes('SKU') && (row.includes('QTY') || row.includes('QUANTITY'))) {
-                        headerIndex = r;
-                        skuCol = row.indexOf('SKU');
-                        qtyCol = row.indexOf('QTY') !== -1 ? row.indexOf('QTY') : row.indexOf('QUANTITY');
-                        descCol = row.indexOf('DESCRIPTION') !== -1 ? row.indexOf('DESCRIPTION') : row.indexOf('DESC');
-                        uomCol = row.indexOf('UOM') !== -1 ? row.indexOf('UOM') : row.indexOf('UNIT');
+        if (isPDF) {
+            // PDF specific table parsing
+            rows.forEach(row => {
+                if (row.length < 3) return;
+                
+                // Find if there is a UOM in the row
+                let uomIdx = -1;
+                for (let i = 0; i < row.length; i++) {
+                    const cellStr = String(row[i]).toLowerCase().trim();
+                    if (cellStr === 'ctn' || cellStr === 'pcs' || cellStr === 'pack' || cellStr === 'pieces' || cellStr === 'box' || cellStr === 'bottle' || cellStr === 'tub') {
+                        uomIdx = i;
                         break;
                     }
                 }
-
-                // Fallback in case columns aren't named standard
-                if (headerIndex === -1) {
-                    headerIndex = 0;
-                    skuCol = 1;
-                    descCol = 2;
-                    qtyCol = 3;
-                    uomCol = 4;
-                }
-
-                // Parse items
-                let importedItems = [];
-                let unmappedCount = 0;
-
-                for (let r = headerIndex + 1; r < rows.length; r++) {
-                    const row = rows[r];
-                    if (!row || row.length < 2) continue;
-
-                    const sku = row[skuCol];
-                    const desc = row[descCol] || '';
-                    const rawQty = parseFloat(row[qtyCol]) || 0;
-                    const uom = String(row[uomCol] || 'ctn').toLowerCase().trim();
-
-                    if (!sku || rawQty <= 0) continue;
-
-                    const matchedProd = findProductByInvoiceRow(sku, desc);
-
-                    if (matchedProd) {
-                        const packSize = parseInt(matchedProd.pack_size) || 12;
-                        let cartons = 0;
-
-                        if (uom.includes('ctn') || uom.includes('carton')) {
-                            cartons = Math.ceil(rawQty);
+                
+                if (uomIdx !== -1 && uomIdx >= 2) {
+                    const skuCandidate = String(row[1]).trim();
+                    const qtyCandidate = parseFloat(row[uomIdx - 1]);
+                    const uom = String(row[uomIdx]).toLowerCase().trim();
+                    
+                    if (skuCandidate && !isNaN(qtyCandidate) && qtyCandidate > 0) {
+                        const desc = row.slice(2, uomIdx - 1).join(' ');
+                        const matchedProd = findProductByInvoiceRow(skuCandidate, desc);
+                        
+                        if (matchedProd) {
+                            const packSize = parseInt(matchedProd.pack_size) || 12;
+                            let cartons = 0;
+                            
+                            if (uom.includes('ctn') || uom.includes('carton')) {
+                                cartons = Math.ceil(qtyCandidate);
+                            } else {
+                                cartons = Math.ceil(qtyCandidate / packSize);
+                            }
+                            
+                            importedItems.push({
+                                product_id: matchedProd.id,
+                                qty: cartons
+                            });
                         } else {
-                            // Convert pcs to carton, rounding up
-                            cartons = Math.ceil(rawQty / packSize);
+                            unmappedCount++;
                         }
-
-                        importedItems.push({
-                            product_id: matchedProd.id,
-                            product_name: matchedProd.name,
-                            qty: cartons
-                        });
-                    } else {
-                        unmappedCount++;
                     }
                 }
+            });
+        } else {
+            // Excel/CSV specific table parsing
+            let headerIndex = -1;
+            let skuCol = -1;
+            let descCol = -1;
+            let qtyCol = -1;
+            let uomCol = -1;
 
-                if (importedItems.length === 0) {
-                    throw new Error("Tiada barisan produk yang sepadan ditemui dalam sistem.");
+            for (let r = 0; r < rows.length; r++) {
+                const row = rows[r].map(c => String(c || '').trim().toUpperCase());
+                if (row.includes('SKU') && (row.includes('QTY') || row.includes('QUANTITY'))) {
+                    headerIndex = r;
+                    skuCol = row.indexOf('SKU');
+                    qtyCol = row.indexOf('QTY') !== -1 ? row.indexOf('QTY') : row.indexOf('QUANTITY');
+                    descCol = row.indexOf('DESCRIPTION') !== -1 ? row.indexOf('DESCRIPTION') : row.indexOf('DESC');
+                    uomCol = row.indexOf('UOM') !== -1 ? row.indexOf('UOM') : row.indexOf('UNIT');
+                    break;
                 }
-
-                // Autofill metadata
-                if (customerName) document.querySelector('input[name="customer_name"]').value = customerName;
-                if (docRef) document.querySelector('input[name="doc_ref"]').value = docRef;
-                if (deliveryDate) document.querySelector('input[name="out_date"]').value = deliveryDate;
-
-                // Clear manual rows and populate with imported rows
-                document.getElementById('outBody').innerHTML = '';
-                rowCount = 0;
-                
-                importedItems.forEach(item => {
-                    addImportedRow(item.product_id, item.qty);
-                });
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Invois Berjaya Diimport!',
-                    text: `Berjaya mengimport ${importedItems.length} produk. ${unmappedCount > 0 ? unmappedCount + ' baris gagal dipadankan.' : ''}`,
-                    confirmButtonColor: '#10b981'
-                });
-
-            } catch (err) {
-                console.error(err);
-                Swal.fire('Ralat Memproses', err.message || 'Gagal menganalisis struktur fail.', 'error');
             }
-        };
-        reader.readAsArrayBuffer(file);
-    };
+
+            if (headerIndex === -1) {
+                headerIndex = 0;
+                skuCol = 1;
+                descCol = 2;
+                qtyCol = 3;
+                uomCol = 4;
+            }
+
+            for (let r = headerIndex + 1; r < rows.length; r++) {
+                const row = rows[r];
+                if (!row || row.length < 2) continue;
+
+                const sku = row[skuCol];
+                const desc = row[descCol] || '';
+                const rawQty = parseFloat(row[qtyCol]) || 0;
+                const uom = String(row[uomCol] || 'ctn').toLowerCase().trim();
+
+                if (!sku || rawQty <= 0) continue;
+
+                const matchedProd = findProductByInvoiceRow(sku, desc);
+
+                if (matchedProd) {
+                    const packSize = parseInt(matchedProd.pack_size) || 12;
+                    let cartons = 0;
+
+                    if (uom.includes('ctn') || uom.includes('carton')) {
+                        cartons = Math.ceil(rawQty);
+                    } else {
+                        cartons = Math.ceil(rawQty / packSize);
+                    }
+
+                    importedItems.push({
+                        product_id: matchedProd.id,
+                        qty: cartons
+                    });
+                } else {
+                    unmappedCount++;
+                }
+            }
+        }
+
+        if (importedItems.length === 0) {
+            throw new Error("Tiada barisan produk yang sepadan ditemui dalam sistem.");
+        }
+
+        // Autofill metadata
+        if (customerName) document.querySelector('input[name="customer_name"]').value = customerName;
+        if (docRef) document.querySelector('input[name="doc_ref"]').value = docRef;
+        if (deliveryDate) document.querySelector('input[name="out_date"]').value = deliveryDate;
+
+        // Clear manual rows and populate with imported rows
+        document.getElementById('outBody').innerHTML = '';
+        rowCount = 0;
+        
+        importedItems.forEach(item => {
+            addImportedRow(item.product_id, item.qty);
+        });
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Fail Berjaya Diimport!',
+            text: `Berjaya mengimport ${importedItems.length} produk dari fail. ${unmappedCount > 0 ? unmappedCount + ' baris gagal dipadankan.' : ''}`,
+            confirmButtonColor: '#10b981'
+        });
+    }
 
     function addImportedRow(productId, qty) {
         let options = '<option value="">-- Choose Product --</option>';
