@@ -104,30 +104,23 @@ $is_staff = ($role === 'admin' || $role === 'staff');
                         <li><a class="dropdown-item" href="receiving_multi.php"><span data-lang="nav_multi_receive">Multi-Item Receive</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="bi bi-truck me-1"></i><span data-lang="nav_operations">Operations</span>
                     </a>
                     <ul class="dropdown-menu">
-                        <?php if ($is_staff): ?>
                         <li><a class="dropdown-item" href="commercial_outbound.php"><span data-lang="nav_commercial_out">Commercial Outbound</span></a></li>
-                        <?php endif; ?>
-                        
                         <li><a class="dropdown-item" href="pss_delivery.php"><span data-lang="nav_pss_delivery">PSS Delivery</span></a></li>
                         <li><a class="dropdown-item" href="outbound_history.php"><span data-lang="nav_outbound_hist">Outbound History</span></a></li>
-                        
-                        <?php if ($is_staff): ?>
+                        <div class="dropdown-divider"></div>
                         <li><a class="dropdown-item" href="reconcile.php"><span data-lang="nav_daily_reconcile">Daily Reconcile</span></a></li>
                         <li><a class="dropdown-item" href="daily_closing_report.php"><i class="bi bi-calendar2-check-fill me-1 text-warning"></i><span>Daily Closing Audit</span></a></li>
                         <li><a class="dropdown-item" href="stock_take.php"><span data-lang="nav_stock_take">Stock Take</span></a></li>
                         <li><a class="dropdown-item" href="stock_transfer.php"><i class="bi bi-arrow-left-right me-1"></i><span data-lang="nav_stock_transfer">Stock Transfer</span></a></li>
-                        <?php endif; ?>
                     </ul>
                 </li>
 
-                <?php if ($is_staff): ?>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="bi bi-graph-up-arrow me-1"></i><span data-lang="nav_reports">Reports</span>
@@ -138,9 +131,7 @@ $is_staff = ($role === 'admin' || $role === 'staff');
                         <li><a class="dropdown-item" href="pallet_management.php"><i class="bi bi-grid-3x3-gap me-1"></i><span data-lang="nav_pallet_monitor">Pallet Monitor</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
                 
-                <?php if ($is_staff): ?>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="bi bi-gear me-1"></i><span data-lang="nav_system">System</span>
@@ -156,6 +147,10 @@ $is_staff = ($role === 'admin' || $role === 'staff');
                         <?php endif; ?>
                     </ul>
                 </li>
+                <?php else: ?>
+                <li class="nav-item"><a class="nav-link" href="master_hubpss.php"><i class="bi bi-cpu-fill me-1 text-info"></i><span data-lang="card_pss_hub">PSS Master Hub</span></a></li>
+                <li class="nav-item"><a class="nav-link" href="pss_delivery.php"><i class="bi bi-mortarboard-fill me-1 text-success"></i><span data-lang="card_pss_delivery">School Delivery (PSS)</span></a></li>
+                <li class="nav-item"><a class="nav-link" href="import_master.php"><i class="bi bi-file-earmark-spreadsheet me-1 text-warning"></i><span data-lang="import_master_title">Import Master PSS</span></a></li>
                 <?php endif; ?>
             </ul>
 
