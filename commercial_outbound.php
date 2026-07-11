@@ -271,7 +271,7 @@ require_once 'includes/header.php';
                     </thead>
                     <tbody id="outBody">
                         <tr class="item-row">
-                            <td class="ps-4">
+                            <td class="ps-4" data-label="Product">
                                 <select name="items[0][product_id]" class="form-select product-select" required>
                                     <option value="">-- Choose Product --</option>
                                     <?php foreach($products as $p): ?>
@@ -279,15 +279,15 @@ require_once 'includes/header.php';
                                     <?php endforeach; ?>
                                 </select>
                             </td>
-                            <td>
+                            <td data-label="Expiry">
                                 <select name="items[0][batch]" class="form-select form-select-sm batch-select text-center fw-bold" onchange="validateBatchStock(this)">
                                     <option value="">-- Auto FEFO --</option>
                                 </select>
                             </td>
-                            <td>
+                            <td data-label="Qty (ctn)">
                                 <input type="number" name="items[0][qty]" class="form-control form-control-sm fw-bold text-center qty-input" required min="1" placeholder="0" oninput="validateBatchStock(this)">
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" data-label="Action">
                                 <button type="button" class="btn btn-outline-danger btn-sm border-0" onclick="removeRow(this)">
                                     <i class="bi bi-trash3 fs-5"></i>
                                 </button>
@@ -379,16 +379,16 @@ require_once 'includes/header.php';
         
         const html = `
             <tr class="item-row">
-                <td class="ps-4">
+                <td class="ps-4" data-label="Product">
                     <select name="items[${rowCount}][product_id]" class="form-select product-select" required>${options}</select>
                 </td>
-                <td>
+                <td data-label="Expiry">
                     <select name="items[${rowCount}][batch]" class="form-select form-select-sm batch-select text-center fw-bold" onchange="validateBatchStock(this)">
                         <option value="">-- Auto FEFO --</option>
                     </select>
                 </td>
-                <td><input type="number" name="items[${rowCount}][qty]" class="form-control form-control-sm fw-bold text-center qty-input" required min="1" placeholder="0" oninput="validateBatchStock(this)"></td>
-                <td class="text-center pe-4">
+                <td data-label="Qty (ctn)"><input type="number" name="items[${rowCount}][qty]" class="form-control form-control-sm fw-bold text-center qty-input" required min="1" placeholder="0" oninput="validateBatchStock(this)"></td>
+                <td class="text-center pe-4" data-label="Action">
                     <button type="button" class="btn btn-outline-danger btn-sm border-0" onclick="removeRow(this)">
                         <i class="bi bi-trash3 fs-5"></i>
                     </button>
@@ -888,17 +888,17 @@ require_once 'includes/header.php';
         
         const html = `
             <tr class="item-row">
-                <td class="ps-4">
+                <td class="ps-4" data-label="Product">
                     <select name="items[${rowCount}][product_id]" class="form-select product-select" required>${options}</select>
                     ${descHtml}
                 </td>
-                <td>
+                <td data-label="Expiry">
                     <select name="items[${rowCount}][batch]" class="form-select form-select-sm batch-select text-center fw-bold" onchange="validateBatchStock(this)">
                         <option value="">-- Auto FEFO --</option>
                     </select>
                 </td>
-                <td><input type="number" name="items[${rowCount}][qty]" class="form-control form-control-sm fw-bold text-center qty-input" required min="1" value="${qty}" oninput="validateBatchStock(this)"></td>
-                <td class="text-center pe-4">
+                <td data-label="Qty (ctn)"><input type="number" name="items[${rowCount}][qty]" class="form-control form-control-sm fw-bold text-center qty-input" required min="1" value="${qty}" oninput="validateBatchStock(this)"></td>
+                <td class="text-center pe-4" data-label="Action">
                     <button type="button" class="btn btn-outline-danger btn-sm border-0" onclick="removeRow(this)">
                         <i class="bi bi-trash3 fs-5"></i>
                     </button>
