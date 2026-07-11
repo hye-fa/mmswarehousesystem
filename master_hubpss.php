@@ -272,6 +272,71 @@ require_once 'includes/header.php';
         to { transform: translateY(0); opacity: 1; }
     }
 
+    /* Analytics Table */
+    .analytics-card {
+        border: 2px solid #3b82f6;
+        border-radius: 16px;
+        padding: 24px;
+        background: #fff;
+        margin: 24px 0;
+        box-shadow: 0 4px 6px -1px rgba(59,130,246,0.06);
+    }
+    .analytics-card h5 { color: #2563eb; margin-bottom: 16px; }
+    #analyticsTable th {
+        background: #eff6ff;
+        color: #1e40af;
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 12px 16px;
+    }
+    #analyticsTable td { padding: 12px 16px; font-size: 0.9rem; vertical-align: middle; }
+    #analyticsTable tr:last-child td { border-bottom: none; }
+    .dealer-progress-mini {
+        background: #e2e8f0;
+        border-radius: 20px;
+        height: 10px;
+        width: 100%;
+        overflow: hidden;
+        margin-top: 4px;
+    }
+    .dealer-progress-mini-bar {
+        background: linear-gradient(90deg, #10b981, #34d399);
+        height: 100%;
+        border-radius: 20px;
+        transition: width 0.6s;
+    }
+
+    /* Summary footer cards */
+    .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin: 24px 0;
+    }
+    .summary-card {
+        padding: 20px 24px;
+        border-radius: 14px;
+        background: #fff;
+        border-left: 6px solid #cbd5e1;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .summary-card .sc-label {
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 4px;
+    }
+    .summary-card .sc-value {
+        font-size: 1.05rem;
+        font-weight: 800;
+    }
+    @media (max-width: 576px) {
+        .summary-cards { grid-template-columns: 1fr; }
+    }
+
     @media print {
         .no-print { display: none !important; }
         body { background: white; }
@@ -324,6 +389,44 @@ require_once 'includes/header.php';
             <b class="stat-value text-warning" id="statsCartons"><?= number_format($total_cartons) ?></b>
         </div>
     </div>
+
+    <!-- Analytics per-dealer table (admin/staff only) -->
+    <?php if ($role === 'admin' || $role === 'staff'): ?>
+    <div class="analytics-card no-print">
+        <h5 class="fw-bold"><i class="bi bi-bar-chart-line-fill me-2"></i>Analytics — Kemajuan per Dealer / HD</h5>
+        <div class="table-wrapper">
+            <table id="analyticsTable" class="w-100">
+                <thead>
+                    <tr>
+                        <th style="width:130px;">Dealer</th>
+                        <th>Sekolah</th>
+                        <th style="width:140px;">Progress (%)</th>
+                        <th>Baki Muatan</th>
+                    </tr>
+                </thead>
+                <tbody id="dealerSummaryBody">
+                    <tr><td colspan="4" class="text-center text-muted py-3">Memuatkan data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PERLU / SIAP / BAKI summary cards -->
+    <div class="summary-cards no-print">
+        <div class="summary-card" style="border-left-color:#3b82f6;">
+            <div class="sc-label text-primary">🔵 Perlu Dihantar (Total)</div>
+            <div class="sc-value text-primary" id="sumPerlu">—</div>
+        </div>
+        <div class="summary-card" style="border-left-color:#10b981;">
+            <div class="sc-label text-success">🟢 Siap Dihantar</div>
+            <div class="sc-value text-success" id="sumSiap">—</div>
+        </div>
+        <div class="summary-card" style="border-left-color:#ef4444;">
+            <div class="sc-label text-danger">🔴 Baki Belum Hantar</div>
+            <div class="sc-value text-danger" id="sumBaki">—</div>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- Admin Setup Tools -->
     <?php if ($role === 'admin' || $role === 'staff'): ?>
@@ -534,6 +637,9 @@ require_once 'includes/header.php';
         document.getElementById('statsDelivered').innerText = doneSch;
         document.getElementById('statsCartons').innerText = totalCtn;
 
+        // === ANALYTICS PER DEALER ===
+        updateAnalyticsUI(fD);
+
         // Group by Date
         const grp = fD.reduce((g, s) => {
             const d = s.plan_date || "Tiada Tarikh";
@@ -609,6 +715,69 @@ require_once 'includes/header.php';
             container.innerHTML = '<p class="text-center text-muted py-5">Tiada sekolah ditemui untuk tapisan semasa.</p>';
         }
     }
+
+    function updateAnalyticsUI(data) {
+        const tbody = document.getElementById('dealerSummaryBody');
+        const sumPerluEl = document.getElementById('sumPerlu');
+        const sumSiapEl = document.getElementById('sumSiap');
+        const sumBakiEl = document.getElementById('sumBaki');
+        if (!tbody) return;
+
+        // Group by dealer
+        const byDealer = {};
+        data.forEach(s => {
+            const d = s.dealer || 'Unknown';
+            if (!byDealer[d]) byDealer[d] = { total: 0, done: 0, totalCtn: 0, doneCtn: 0, extraTotal: 0, extraDone: 0 };
+            byDealer[d].total++;
+            byDealer[d].totalCtn += Number(s.totalCartons) || 0;
+            byDealer[d].extraTotal += Number(s.extraPacks) || 0;
+            if (s.isDelivered) {
+                byDealer[d].done++;
+                byDealer[d].doneCtn += Number(s.totalCartons) || 0;
+                byDealer[d].extraDone += Number(s.extraPacks) || 0;
+            }
+        });
+
+        const dealers = Object.keys(byDealer).sort();
+        let grandTotalCtn = 0, grandDoneCtn = 0, grandTotalExtra = 0, grandDoneExtra = 0;
+
+        tbody.innerHTML = dealers.map(d => {
+            const r = byDealer[d];
+            const pct = r.total > 0 ? Math.round((r.done / r.total) * 100) : 0;
+            const bakiCtn = r.totalCtn - r.doneCtn;
+            const bakiExtra = r.extraTotal - r.extraDone;
+            const bakiStr = calcFullMuatan(bakiCtn, bakiExtra);
+            const isComplete = bakiCtn === 0 && bakiExtra === 0;
+            const pctColor = pct >= 100 ? '#10b981' : pct >= 60 ? '#f59e0b' : '#ef4444';
+
+            grandTotalCtn   += r.totalCtn;
+            grandDoneCtn    += r.doneCtn;
+            grandTotalExtra += r.extraTotal;
+            grandDoneExtra  += r.extraDone;
+
+            return `<tr>
+                <td><strong class="text-uppercase">${d}</strong></td>
+                <td>
+                    <span style="color:#2563eb;font-weight:700;">${r.done}/${r.total}</span>
+                    <div class="dealer-progress-mini"><div class="dealer-progress-mini-bar" style="width:${pct}%;"></div></div>
+                </td>
+                <td style="color:${pctColor};font-weight:800;">${pct}%</td>
+                <td style="color:${isComplete ? '#10b981' : '#ef4444'};font-weight:700;">${bakiStr}</td>
+            </tr>`;
+        }).join('');
+
+        if (dealers.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">Tiada data dealer.</td></tr>';
+        }
+
+        // Summary cards
+        const bakiCtnTotal  = grandTotalCtn - grandDoneCtn;
+        const bakiExtraTotal = grandTotalExtra - grandDoneExtra;
+        if (sumPerluEl) sumPerluEl.textContent = calcFullMuatan(grandTotalCtn, grandTotalExtra).replace(/[()]/g,'');
+        if (sumSiapEl)  sumSiapEl.textContent  = calcFullMuatan(grandDoneCtn, grandDoneExtra).replace(/[()]/g,'');
+        if (sumBakiEl)  sumBakiEl.textContent  = calcFullMuatan(bakiCtnTotal, bakiExtraTotal).replace(/[()]/g,'');
+    }
+
 
     async function updateRec(id, field, value) {
         const s = schoolsData.find(x => x.id === id);
