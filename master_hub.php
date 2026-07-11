@@ -144,14 +144,14 @@ $page_title = 'MMS Master Hub | Susumura';
             <div class="section-header">🛡️ Quality & Return Management</div>
             <div class="card nav-card">
                 <div class="list-group list-group-flush">
-                    <a href="spoilage_report.php" class="list-group-item list-group-item-action">
+                    <a href="spoilage_record.php" class="list-group-item list-group-item-action">
                         <div class="icon-box bg-danger-subtle text-danger"><i class="bi bi-camera-fill"></i></div>
                         <div>
                             <span class="menu-title">Report New Spoilage</span>
                             <span class="menu-sub">Log physical damage with photos.</span>
                         </div>
                     </a>
-                    <a href="spoilage_list.php" class="list-group-item list-group-item-action">
+                    <a href="spoilage_report.php" class="list-group-item list-group-item-action">
                         <div class="icon-box bg-danger-subtle text-danger"><i class="bi bi-clipboard-data-fill"></i></div>
                         <div>
                             <span class="menu-title">Spoilage List (Claims)</span>

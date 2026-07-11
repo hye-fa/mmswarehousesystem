@@ -499,14 +499,14 @@ require_once 'includes/header.php';
                 </div>
             </a>
 
-            <a href="spoilage_report.php" class="nav-card">
+            <a href="spoilage_record.php" class="nav-card">
                 <div class="icon-box bg-danger text-white"><i class="bi bi-patch-exclamation"></i></div>
                 <div class="content">
                     <span class="title" data-lang="card_spoilage_rep">Report Spoilage</span>
                     <span class="desc" data-lang="card_spoilage_rep_d">Rekod stok rosak/tamat tempoh dengan foto.</span>
                 </div>
             </a>
-            <a href="spoilage_list.php" class="nav-card">
+            <a href="spoilage_report.php" class="nav-card">
                 <div class="icon-box bg-danger-subtle text-danger"><i class="bi bi-list-ul"></i></div>
                 <div class="content">
                     <span class="title" data-lang="card_spoilage_list">Spoilage Logs</span>

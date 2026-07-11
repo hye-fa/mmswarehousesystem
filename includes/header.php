@@ -147,8 +147,8 @@ $is_staff = ($role === 'admin' || $role === 'staff');
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="product_management.php"><span data-lang="nav_master_data">Product Management</span></a></li>
-                        <li><a class="dropdown-item" href="spoilage_report.php"><span data-lang="nav_spoilage_report">Spoilage Report</span></a></li>
-                        <li><a class="dropdown-item" href="spoilage_list.php"><span data-lang="nav_spoilage_list">Spoilage List</span></a></li>
+                        <li><a class="dropdown-item" href="spoilage_record.php"><span data-lang="nav_spoilage_report">Spoilage Report</span></a></li>
+                        <li><a class="dropdown-item" href="spoilage_report.php"><span data-lang="nav_spoilage_list">Spoilage List</span></a></li>
                         <?php if ($is_admin): ?>
                         <div class="dropdown-divider"></div>
                         <li><a class="dropdown-item" href="user_management.php"><i class="bi bi-people me-1"></i><span data-lang="nav_user_mgmt">User Management</span></a></li>
