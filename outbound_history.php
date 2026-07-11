@@ -171,7 +171,7 @@ require_once 'includes/header.php';
     $(document).ready(function() {
         // Aktifkan dataTables untuk kemudahan carian/penapis dinamik
         if ($('#historyTable tbody tr:not(.no-datatable)').length > 0) {
-            $('#historyTable').DataTable({
+            let table = $('#historyTable').DataTable({
                 "order": [[ 0, "desc" ]],
                 "pageLength": 15,
                 "lengthMenu": [10, 15, 25, 50],
@@ -188,6 +188,12 @@ require_once 'includes/header.php';
                     }
                 }
             });
+            
+            let urlParams = new URLSearchParams(window.location.search);
+            let searchVal = urlParams.get('search');
+            if (searchVal) {
+                table.search(searchVal).draw();
+            }
         }
 
         // Panggilan AJAX untuk memaparkan butiran item

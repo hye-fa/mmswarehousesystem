@@ -91,6 +91,7 @@ $pallet_totals = $pdo->query($sql_pallets)->fetch();
 $page_title = 'Warehouse Monitor | Moo Moo Supplies';
 require_once 'includes/header.php';
 ?>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
     .mms-header-sub { background: var(--mms-navy); color: white; padding: 15px 0; border-bottom: 4px solid var(--mms-cyan); margin-top: -1.5rem; }
     .card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
@@ -209,7 +210,17 @@ require_once 'includes/header.php';
     <div class="row">
         <div class="col-md-7">
             <div class="card h-100 shadow-sm">
-                <div class="card-header py-3"><i class="bi bi-box-fill me-2 text-mms-cyan"></i>STOCK BALANCE</div>
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <div><i class="bi bi-box-fill me-2 text-mms-cyan"></i>STOCK BALANCE</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-success fw-bold px-2 py-0.5" style="font-size:0.75rem;" onclick="exportStockToExcel()">
+                            <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
+                        </button>
+                        <button class="btn btn-sm btn-outline-dark fw-bold px-2 py-0.5" style="font-size:0.75rem;" onclick="printStockTable()">
+                            <i class="bi bi-printer me-1"></i> Cetak
+                        </button>
+                    </div>
+                </div>
                 <div class="card-body p-0">
                     <table class="table table-hover mb-0 align-middle" id="stockTable">
                         <thead>
@@ -307,5 +318,106 @@ require_once 'includes/header.php';
             }
         });
     });
+
+    function exportStockToExcel() {
+        const data = <?php echo json_encode($stock_balance); ?>;
+        
+        const ws_data = [
+            ["Category", "Product", "Expiry Date", "Quantity", "UOM"]
+        ];
+        
+        data.forEach(item => {
+            let exp = item.expiry_date ? new Date(item.expiry_date).toLocaleDateString('ms-MY') : 'No Stock';
+            ws_data.push([
+                item.category || '',
+                item.name || '',
+                exp,
+                parseInt(item.total_qty) || 0,
+                item.uom || 'ctn'
+            ]);
+        });
+        
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(ws_data);
+        
+        // Auto-width columns
+        const max_len = ws_data[0].map((_, colIdx) => Math.max(...ws_data.map(row => String(row[colIdx] || '').length)));
+        ws['!cols'] = max_len.map(w => ({ w: w + 3 }));
+        
+        XLSX.utils.book_append_sheet(wb, ws, "Stock Balance");
+        XLSX.writeFile(wb, "MMS_Stock_Balance_" + new Date().toISOString().split('T')[0] + ".xlsx");
+    }
+
+    function printStockTable() {
+        const printWindow = window.open('', '_blank', 'width=900,height=700');
+        const dateStr = new Date().toLocaleString('ms-MY');
+        
+        let rowsHtml = '';
+        const data = <?php echo json_encode($stock_balance); ?>;
+        
+        data.forEach((item, idx) => {
+            let exp = item.expiry_date ? new Date(item.expiry_date).toLocaleDateString('ms-MY') : 'No Stock';
+            rowsHtml += `
+                <tr>
+                    <td style="padding:8px; border:1px solid #cbd5e1; text-align:center;">${idx + 1}</td>
+                    <td style="padding:8px; border:1px solid #cbd5e1; text-align:center;"><span style="font-size:0.75rem; font-weight:bold; padding:2px 8px; border-radius:10px; background:#f1f5f9;">${item.category || ''}</span></td>
+                    <td style="padding:8px; border:1px solid #cbd5e1; font-weight:bold;">${item.name || ''}</td>
+                    <td style="padding:8px; border:1px solid #cbd5e1; text-align:center;">${exp}</td>
+                    <td style="padding:8px; border:1px solid #cbd5e1; text-align:right; font-weight:bold;">${Number(item.total_qty || 0).toLocaleString()} ${item.uom || 'ctn'}</td>
+                </tr>
+            `;
+        });
+        
+        const htmlContent = `
+            <html>
+            <head>
+                <title>Laporan Baki Stok (Stock Balance Report)</title>
+                <style>
+                    body { font-family: Arial, sans-serif; color: #1e293b; padding: 30px; line-height: 1.5; }
+                    .header { text-align: center; margin-bottom: 25px; border-bottom: 3px double #cbd5e1; padding-bottom: 15px; }
+                    .header h2 { margin: 0; color: #0f172a; }
+                    .header p { margin: 5px 0 0 0; color: #64748b; font-size: 0.9rem; }
+                    .info-bar { font-size: 0.85rem; color: #475569; margin-bottom: 20px; display: flex; justify-content: space-between; }
+                    .items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                    .items-table th { background: #f1f5f9; padding: 10px; border: 1px solid #cbd5e1; font-weight: bold; font-size: 0.85rem; }
+                    .items-table td { font-size: 0.82rem; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h2>MOO MOO SUPPLIES</h2>
+                    <p>LAPORAN BAKI STOK SEMASA (CURRENT STOCK BALANCE)</p>
+                </div>
+                <div class="info-bar">
+                    <span><strong>Tarikh Cetak:</strong> ${dateStr}</span>
+                    <span><strong>Lokasi:</strong> Warehouse</span>
+                </div>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th style="width:50px; text-align:center;">No.</th>
+                            <th style="width:100px; text-align:center;">Kategori</th>
+                            <th>Nama Produk</th>
+                            <th style="width:130px; text-align:center;">Tarikh Luput</th>
+                            <th style="width:120px; text-align:right;">Jumlah Baki</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
+                <script>
+                    window.onload = function() {
+                        window.print();
+                        setTimeout(function() { window.close(); }, 500);
+                    };
+                <\/script>
+            </body>
+            </html>
+        `;
+        
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+    }
 </script>
 <?php require_once 'includes/footer.php'; ?>

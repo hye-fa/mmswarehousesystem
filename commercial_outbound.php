@@ -4,9 +4,23 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 require_once 'config/db.php';
 
-// Fetch All Active Products (Including PSS)
-$products = $pdo->query("SELECT id, name, category, pack_size FROM products WHERE is_active=1 ORDER BY name ASC")->fetchAll();
+// Fetch All Active Products with Stock Levels (Including PSS)
+$products = $pdo->query("
+    SELECT p.id, p.name, p.category, p.pack_size,
+           COALESCE((SELECT SUM(qty_on_hand) FROM inventory_batches WHERE product_id = p.id AND qty_on_hand > 0), 0) as qty_on_hand
+    FROM products p
+    WHERE p.is_active=1
+    ORDER BY p.name ASC
+")->fetchAll();
 
+// Fetch last 10 processed commercial outbound logs
+$history_logs = $pdo->query("
+    SELECT id, date, customer, doc_ref, created_at
+    FROM outbound_logs
+    WHERE category = 'Commercial'
+    ORDER BY id DESC
+    LIMIT 10
+")->fetchAll();
 
 $page_title = 'Commercial Outbound | MMS LOGISTIK';
 require_once 'includes/header.php';
@@ -261,7 +275,7 @@ require_once 'includes/header.php';
                                 <select name="items[0][product_id]" class="form-select product-select" required>
                                     <option value="">-- Choose Product --</option>
                                     <?php foreach($products as $p): ?>
-                                        <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['name']) ?></option>
+                                        <option value="<?= $p['id'] ?>" data-stock="<?= $p['qty_on_hand'] ?>"><?= htmlspecialchars($p['name']) ?> (Baki: <?= $p['qty_on_hand'] ?> ctn)</option>
                                     <?php endforeach; ?>
                                 </select>
                             </td>
@@ -297,6 +311,49 @@ require_once 'includes/header.php';
         </div>
         
     </form>
+
+    <!-- SEKSYEN 3: Sejarah Fail Invois / DO Diproses -->
+    <div class="card shadow-sm border-0 mb-5 p-4" style="border-radius: 16px;">
+        <div class="block-header text-navy" style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;"><i class="bi bi-clock-history text-primary"></i> Sejarah Fail Invois / DO Diproses</div>
+        <p class="text-muted small mb-3">Senarai 10 fail invois komersial terakhir yang telah berjaya diproses dan memotong stok gudang.</p>
+        
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="font-size: 0.85rem;">
+                <thead class="table-light">
+                    <tr class="text-secondary small fw-bold">
+                        <th class="ps-3">Tarikh Proses</th>
+                        <th>Tarikh Penghantaran</th>
+                        <th>No. DO / Invois Ref</th>
+                        <th>Nama Pelanggan / Outlet</th>
+                        <th class="text-center">Tindakan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($history_logs)): ?>
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">
+                                <i class="bi bi-info-circle-fill fs-4 d-block mb-1"></i> Tiada rekod pemprosesan ditemui.
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($history_logs as $log): ?>
+                            <tr>
+                                <td class="ps-3 text-muted"><?= date('d/m/Y h:i A', strtotime($log['created_at'])) ?></td>
+                                <td class="fw-bold text-dark"><?= date('d/m/Y', strtotime($log['date'])) ?></td>
+                                <td><span class="badge bg-light text-primary border font-monospace px-2.5 py-1.5 fs-7" style="color: #0b2147; border-color: #e2e8f0;"><?= htmlspecialchars($log['doc_ref'] ?: 'N/A') ?></span></td>
+                                <td><?= htmlspecialchars($log['customer']) ?></td>
+                                <td class="text-center">
+                                    <a href="outbound_history.php?search=<?= urlencode($log['doc_ref']) ?>" class="btn btn-sm btn-outline-primary py-1 px-3 fw-bold">
+                                        <i class="bi bi-eye-fill me-1"></i> Papar Detail
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 
@@ -318,7 +375,7 @@ require_once 'includes/header.php';
     
     function addRow() {
         let options = '<option value="">-- Choose Product --</option>';
-        products.forEach(p => options += `<option value="${p.id}">${p.name}</option>`);
+        products.forEach(p => options += `<option value="${p.id}" data-stock="${p.qty_on_hand}">${p.name} (Baki: ${p.qty_on_hand} ctn)</option>`);
         
         const html = `
             <tr class="item-row">
@@ -356,6 +413,31 @@ require_once 'includes/header.php';
         }
     }
 
+    function checkStockAlert(row) {
+        let sel = $(row).find('.product-select');
+        let selectedOpt = sel.find(':selected');
+        let stock = parseInt(selectedOpt.data('stock')) || 0;
+        let qtyInput = $(row).find('.qty-input');
+        let qty = parseInt(qtyInput.val()) || 0;
+        
+        let alertDiv = $(row).find('.stock-alert-msg');
+        if (alertDiv.length === 0) {
+            $(row).find('td:first-child').append('<div class="stock-alert-msg mt-1"></div>');
+            alertDiv = $(row).find('.stock-alert-msg');
+        }
+        
+        if (sel.val() && qty > stock) {
+            alertDiv.html(`<span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1" style="font-size:0.75rem;"><i class="bi bi-exclamation-triangle-fill me-1"></i>Stok Tidak Mencukupi (Sedia Ada: ${stock} ctn)</span>`);
+        } else {
+            alertDiv.html('');
+        }
+    }
+
+    $(document).on('input', '.qty-input', function() {
+        let row = $(this).closest('tr');
+        checkStockAlert(row);
+    });
+
     // Panggilan AJAX untuk memuatkan batch produk secara dinamik
     $(document).on('change', '.product-select', function() {
         let row = $(this).closest('tr');
@@ -364,7 +446,6 @@ require_once 'includes/header.php';
         let qtyInput = row.find('.qty-input');
         
         batchSelect.empty().append('<option value="">-- Auto FEFO --</option>');
-        qtyInput.val('');
         
         if (pid) {
             fetch('api/get_batches.php?product_id=' + pid)
@@ -377,8 +458,11 @@ require_once 'includes/header.php';
                         batchSelect.append(`<option value="${b.batch_no}" data-qty="${b.qty_on_hand}">Batch: ${b.batch_no} (Baki: ${b.qty_on_hand} ctn | Exp: ${b.expiry_date})</option>`);
                     });
                 }
+                checkStockAlert(row);
             })
             .catch(err => console.error("Gagal mendapatkan batch:", err));
+        } else {
+            checkStockAlert(row);
         }
     });
 
@@ -401,6 +485,7 @@ require_once 'includes/header.php';
             });
             qtyInput.val(maxQty);
         }
+        checkStockAlert(row);
     }
 
     // Mapping dictionary for SKU shortcodes to keywords in product names
@@ -779,7 +864,7 @@ require_once 'includes/header.php';
         let options = '<option value="">-- Choose Product --</option>';
         products.forEach(p => {
             const selected = p.id == productId ? 'selected' : '';
-            options += `<option value="${p.id}" ${selected}>${p.name}</option>`;
+            options += `<option value="${p.id}" data-stock="${p.qty_on_hand}" ${selected}>${p.name} (Baki: ${p.qty_on_hand} ctn)</option>`;
         });
         
         let descHtml = '';
@@ -815,6 +900,8 @@ require_once 'includes/header.php';
         
         // Force retention of qty after the change event handler completes
         $(row).find('.qty-input').val(qty);
+        
+        checkStockAlert(row);
         
         rowCount++;
         initSelect2();

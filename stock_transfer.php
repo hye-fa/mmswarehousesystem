@@ -483,6 +483,116 @@ function validateQty(input, max) {
     }
 }
 
+// Helper to fetch product name and batch from DOM row
+function getRowDetails(batchId) {
+    const tr = document.querySelector(`tr[data-batch-id="${batchId}"]`);
+    if (!tr) return { productName: 'Unknown', batchNo: '—' };
+    const productName = tr.querySelector('.fw-600').textContent.trim();
+    // Get batch no from fourth column (index 3)
+    const batchCell = tr.querySelectorAll('td')[3];
+    const batchNo = batchCell.childNodes[0].textContent.trim();
+    return { productName, batchNo };
+}
+
+// ===== PRINT TRANSFER SLIP =====
+function printTransferSlip(items, destination, reason) {
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    const dateStr = new Date().toLocaleString('ms-MY');
+    
+    let rowsHtml = '';
+    items.forEach((item, idx) => {
+        rowsHtml += `
+            <tr>
+                <td style="padding:10px; border:1px solid #cbd5e1; text-align:center;">${idx + 1}</td>
+                <td style="padding:10px; border:1px solid #cbd5e1;">${item.productName}</td>
+                <td style="padding:10px; border:1px solid #cbd5e1; text-align:center; font-family:monospace;">${item.batchNo || '—'}</td>
+                <td style="padding:10px; border:1px solid #cbd5e1; text-align:center; font-weight:bold;">${item.qty} ctn</td>
+            </tr>
+        `;
+    });
+    
+    const htmlContent = `
+        <html>
+        <head>
+            <title>Nota Pemindahan Stok (Stock Transfer Slip)</title>
+            <style>
+                body { font-family: Arial, sans-serif; color: #1e293b; padding: 40px; line-height: 1.5; }
+                .header { text-align: center; margin-bottom: 30px; border-bottom: 3px double #cbd5e1; padding-bottom: 15px; }
+                .header h2 { margin: 0; color: #0f172a; }
+                .header p { margin: 5px 0 0 0; color: #64748b; font-size: 0.9rem; letter-spacing: 1px; }
+                .info-table { width: 100%; margin-bottom: 25px; border-collapse: collapse; }
+                .info-table td { padding: 8px 0; font-size: 0.9rem; }
+                .info-table td.label { font-weight: bold; width: 160px; color: #475569; }
+                .items-table { width: 100%; border-collapse: collapse; margin-bottom: 35px; }
+                .items-table th { background: #f1f5f9; padding: 10px; border: 1px solid #cbd5e1; font-weight: bold; text-align: left; font-size: 0.9rem; }
+                .items-table td { font-size: 0.85rem; }
+                .footer-sig { width: 100%; margin-top: 60px; display: table; table-layout: fixed; }
+                .sig-col { display: table-cell; text-align: center; }
+                .sig-box { width: 220px; margin: 0 auto; text-align: center; border-top: 1px solid #94a3b8; padding-top: 8px; font-size: 0.85rem; color: #475569; }
+                @media print {
+                    body { padding: 10px; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h2>MOO MOO SUPPLIES WMS</h2>
+                <p>NOTA PEMINDAHAN STOK GUDANG (STOCK TRANSFER NOTE)</p>
+            </div>
+            <table class="info-table">
+                <tr>
+                    <td class="label">Tarikh & Masa:</td>
+                    <td>${dateStr}</td>
+                    <td class="label">Dari Lokasi:</td>
+                    <td>${FROM_LOCATION}</td>
+                </tr>
+                <tr>
+                    <td class="label">Sebab Pindahan:</td>
+                    <td>${reason}</td>
+                    <td class="label">Ke Destinasi:</td>
+                    <td>${destination}</td>
+                </tr>
+            </table>
+            
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th style="text-align:center; width:50px;">No.</th>
+                        <th>Nama Produk</th>
+                        <th style="text-align:center; width:140px;">Batch / Lot</th>
+                        <th style="text-align:center; width:120px;">Kuantiti</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+            </table>
+            
+            <div class="footer-sig">
+                <div class="sig-col">
+                    <div class="sig-box" style="margin-bottom: 40px;"></div>
+                    <div class="sig-box">Disediakan Oleh<br>(Penyelia Stor)</div>
+                </div>
+                <div class="sig-col">
+                    <div class="sig-box" style="margin-bottom: 40px;"></div>
+                    <div class="sig-box">Diterima Oleh<br>(Penerima Lokasi)</div>
+                </div>
+            </div>
+            
+            <script>
+                window.onload = function() {
+                    window.print();
+                    setTimeout(function() { window.close(); }, 500);
+                };
+            <\/script>
+        </body>
+        </html>
+    `;
+    
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+}
+
 // ===== SINGLE TRANSFER =====
 function doTransfer(batchId, productId, productName, maxQty) {
     const qtyInput  = document.getElementById('qty_' + batchId);
@@ -503,6 +613,11 @@ function doTransfer(batchId, productId, productName, maxQty) {
         qtyInput.focus();
         return;
     }
+    if (reason === '') {
+        showToast('Sila masukkan sebab pemindahan stok!', 'danger');
+        reasonInp.focus();
+        return;
+    }
 
     const confirmed = confirm(
         `Sahkan pindahan stok?\n\n` +
@@ -510,12 +625,15 @@ function doTransfer(batchId, productId, productName, maxQty) {
         `Dari   : ${FROM_LOCATION}\n` +
         `Ke     : ${dest}\n` +
         `Kuantiti: ${qty} ctn\n` +
-        (reason ? `Sebab  : ${reason}` : '')
+        `Sebab  : ${reason}`
     );
 
     if (!confirmed) return;
 
-    sendTransfer([{ batch_id: batchId, qty: qty }], dest, reason);
+    const details = getRowDetails(batchId);
+    const printItems = [{ productName: details.productName, batchNo: details.batchNo, qty: qty }];
+
+    sendTransfer([{ batch_id: batchId, qty: qty }], dest, reason, printItems);
 }
 
 // ===== BULK TRANSFER =====
@@ -528,27 +646,37 @@ function doBulkTransfer() {
         showToast('Tiada batch dipilih!', 'warning');
         return;
     }
+    if (reason === '') {
+        showToast('Sila masukkan sebab pemindahan stok!', 'danger');
+        document.getElementById('bulkReason').focus();
+        return;
+    }
 
     let items = [];
+    let printItems = [];
     checked.forEach(cb => {
         const tr = cb.closest('tr');
         const max = parseInt(tr.dataset.max) || 0;
-        items.push({ batch_id: parseInt(cb.value), qty: max });
+        const bid = parseInt(cb.value);
+        items.push({ batch_id: bid, qty: max });
+        
+        const details = getRowDetails(bid);
+        printItems.push({ productName: details.productName, batchNo: details.batchNo, qty: max });
     });
 
     const confirmed = confirm(
         `Sahkan pindahan stok?\n\n` +
         `${items.length} batch akan dipindah ke: ${dest}\n` +
         `(Kuantiti penuh setiap batch)\n` +
-        (reason ? `Sebab: ${reason}` : '')
+        `Sebab: ${reason}`
     );
     if (!confirmed) return;
 
-    sendTransfer(items, dest, reason);
+    sendTransfer(items, dest, reason, printItems);
 }
 
 // ===== AJAX TRANSFER =====
-function sendTransfer(items, destination, reason) {
+function sendTransfer(items, destination, reason, printItems) {
     fetch('api/save_stock_transfer.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -558,7 +686,8 @@ function sendTransfer(items, destination, reason) {
     .then(data => {
         if (data.success) {
             showToast(data.message || 'Stok berjaya dipindah!', 'success');
-            setTimeout(() => location.reload(), 1200);
+            printTransferSlip(printItems, destination, reason);
+            setTimeout(() => location.reload(), 1500);
         } else {
             showToast('Ralat: ' + (data.message || 'Transfer gagal.'), 'danger');
         }

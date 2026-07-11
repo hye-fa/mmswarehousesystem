@@ -136,6 +136,8 @@ require_once 'includes/header.php';
     }
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 <div class="page-header mb-4 no-print">
     <div class="container-fluid px-4">
         <div class="d-flex justify-content-between align-items-center flex-column flex-md-row gap-3">
@@ -146,6 +148,7 @@ require_once 'includes/header.php';
             <div class="d-flex gap-2">
                 <a href="index.php" class="btn btn-outline-light"><i class="bi bi-house me-1"></i> Dashboard</a>
                 <a href="daily_closing_report.php" class="btn btn-warning text-dark fw-bold"><i class="bi bi-plus-lg me-1"></i> New Audit</a>
+                <button type="button" class="btn btn-success text-white fw-bold" onclick="exportMatrixToExcel()"><i class="bi bi-file-earmark-excel me-1"></i> Export Excel</button>
                 <button type="button" class="btn btn-info text-white fw-bold" onclick="window.print()"><i class="bi bi-printer me-1"></i> Print Matrix</button>
             </div>
         </div>
@@ -226,5 +229,19 @@ require_once 'includes/header.php';
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+function exportMatrixToExcel() {
+    // Select the matrix table
+    const table = document.querySelector('.table-bordered');
+    if (!table) return;
+    
+    // Convert table to workbook
+    const wb = XLSX.utils.table_to_book(table, { sheet: "Closing Stock Matrix" });
+    
+    // Save workbook
+    XLSX.writeFile(wb, "MMS_Closing_Stock_Matrix_" + new Date().toISOString().split('T')[0] + ".xlsx");
+}
+</script>
 
 <?php require_once 'includes/footer.php'; ?>
