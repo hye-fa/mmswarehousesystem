@@ -16,6 +16,9 @@ $can_edit = ($role === 'admin' || $role === 'staff');
 
 // --- FILTER ---
 $filter_location = $_GET['from_location'] ?? 'Warehouse';
+if (!in_array($filter_location, ['Warehouse', 'Buffer'])) {
+    $filter_location = 'Warehouse';
+}
 $filter_category = $_GET['category'] ?? '';
 $filter_product  = $_GET['product'] ?? '';
 
@@ -56,9 +59,9 @@ $batches = $stmt->fetchAll();
 $loc_summary = $pdo->query("
     SELECT location_status, COUNT(*) as batch_count, COALESCE(SUM(qty_on_hand),0) as total_qty
     FROM inventory_batches
-    WHERE qty_on_hand > 0
+    WHERE qty_on_hand > 0 AND location_status IN ('Warehouse','Buffer')
     GROUP BY location_status
-    ORDER BY FIELD(location_status, 'Warehouse','Buffer','Shop','Damaged')
+    ORDER BY FIELD(location_status, 'Warehouse','Buffer')
 ")->fetchAll();
 
 // Build quick lookup
@@ -252,7 +255,7 @@ require_once 'includes/header.php';
                 <span class="fn-sub">Stor Utama</span>
             </a>
 
-            <div class="flow-arrow"><i class="bi bi-arrow-right"></i></div>
+            <div class="flow-arrow"><i class="bi bi-arrow-left-right"></i></div>
 
             <a href="?from_location=Buffer&category=<?= urlencode($filter_category) ?>"
                class="flow-node node-buffer <?= ($filter_location === 'Buffer') ? 'active' : '' ?>">
@@ -260,26 +263,6 @@ require_once 'includes/header.php';
                 <span class="fn-qty"><?= number_format($loc_totals['Buffer'] ?? 0) ?></span>
                 <span class="fn-label">Buffer</span>
                 <span class="fn-sub">Stok Sementara</span>
-            </a>
-
-            <div class="flow-arrow"><i class="bi bi-arrow-right"></i></div>
-
-            <a href="?from_location=Shop&category=<?= urlencode($filter_category) ?>"
-               class="flow-node node-shop <?= ($filter_location === 'Shop') ? 'active' : '' ?>">
-                <i class="bi bi-shop fs-4 d-block mb-1"></i>
-                <span class="fn-qty"><?= number_format($loc_totals['Shop'] ?? 0) ?></span>
-                <span class="fn-label">Shop</span>
-                <span class="fn-sub">Kedai / Display</span>
-            </a>
-
-            <div class="flow-arrow">·</div>
-
-            <a href="?from_location=Damaged&category=<?= urlencode($filter_category) ?>"
-               class="flow-node node-damaged <?= ($filter_location === 'Damaged') ? 'active' : '' ?>">
-                <i class="bi bi-exclamation-triangle fs-4 d-block mb-1"></i>
-                <span class="fn-qty"><?= number_format($loc_totals['Damaged'] ?? 0) ?></span>
-                <span class="fn-label">Damaged</span>
-                <span class="fn-sub">Rosak / Reject</span>
             </a>
         </div>
     </div>
@@ -296,8 +279,6 @@ require_once 'includes/header.php';
                 <select name="from_location" class="form-select form-select-sm" onchange="this.form.submit()">
                     <option value="Warehouse" <?= ($filter_location === 'Warehouse') ? 'selected' : '' ?>>📦 Warehouse</option>
                     <option value="Buffer"    <?= ($filter_location === 'Buffer')    ? 'selected' : '' ?>>🗃️ Buffer</option>
-                    <option value="Shop"      <?= ($filter_location === 'Shop')      ? 'selected' : '' ?>>🏪 Shop</option>
-                    <option value="Damaged"   <?= ($filter_location === 'Damaged')   ? 'selected' : '' ?>>⚠️ Damaged</option>
                 </select>
             </div>
             <div class="col-md-3">
@@ -432,7 +413,7 @@ require_once 'includes/header.php';
                         <td>
                             <select class="dest-select" id="dest_<?= $b['batch_id'] ?>">
                                 <?php
-                                    $locs = ['Warehouse','Buffer','Shop','Damaged'];
+                                    $locs = ['Warehouse','Buffer'];
                                     foreach ($locs as $l):
                                         if ($l === $filter_location) continue;
                                 ?>
@@ -467,7 +448,7 @@ require_once 'includes/header.php';
                     <label class="small fw-bold text-muted">Pindah ke:</label>
                     <select class="dest-select" id="bulkDest">
                         <?php
-                            $locs = ['Warehouse','Buffer','Shop','Damaged'];
+                            $locs = ['Warehouse','Buffer'];
                             foreach ($locs as $l):
                                 if ($l === $filter_location) continue;
                         ?>
