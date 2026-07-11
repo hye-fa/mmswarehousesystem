@@ -222,6 +222,7 @@ require_once 'includes/header.php';
 </div>
 
 <div class="container-fluid px-4 pb-5">
+    <?php if ($is_staff): ?>
     <div class="row g-4 mb-5">
         <div class="col-md-4">
             <div class="card stat-card p-4">
@@ -270,9 +271,10 @@ require_once 'includes/header.php';
             </div>
         </div>
     </div>
+    <?php endif; ?>
 
     <!-- Expiry Risk & Low Stock Alert Dashboard Section -->
-    <?php if (!empty($expiring_batches) || !empty($low_stock_products)): ?>
+    <?php if ($is_staff && (!empty($expiring_batches) || !empty($low_stock_products))): ?>
     <?php 
     $has_expiry = !empty($expiring_batches);
     $col_class = $has_expiry ? 'col-lg-6' : 'col-lg-12';
