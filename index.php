@@ -424,15 +424,22 @@ require_once 'includes/header.php';
                     <span class="desc" data-lang="card_comm_out_d">Stok keluar untuk jualan komersial.</span>
                 </div>
             </a>
-            <?php endif; ?>
-            
-            <a href="pss_delivery.php" class="nav-card">
-                <div class="icon-box bg-success text-white"><i class="bi bi-mortarboard-fill"></i></div>
+            <a href="import_co_ui.php" class="nav-card">
+                <div class="icon-box bg-warning text-dark"><i class="bi bi-file-earmark-excel"></i></div>
                 <div class="content">
-                    <span class="title" data-lang="card_pss_delivery">School Delivery (PSS)</span>
-                    <span class="desc" data-lang="card_pss_delivery_d">Proses dokumen DO bagi projek Susu Sekolah.</span>
+                    <span class="title" data-lang="card_co_import">Monthly CO Import</span>
+                    <span class="desc" data-lang="card_co_import_d">Import data CO & jana fail SAP sekolah.</span>
                 </div>
             </a>
+            <a href="view_batch.php" class="nav-card">
+                <div class="icon-box bg-secondary text-white"><i class="bi bi-archive"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="card_batch_arch">Batch Archives</span>
+                    <span class="desc" data-lang="card_batch_arch_d">Rekod arkib laporan SAP yang dijana.</span>
+                </div>
+            </a>
+            <?php endif; ?>
+            
             <a href="outbound_history.php" class="nav-card">
                 <div class="icon-box bg-dark text-white"><i class="bi bi-clock-history"></i></div>
                 <div class="content">
@@ -453,21 +460,16 @@ require_once 'includes/header.php';
                     <span class="desc" data-lang="card_pss_hub_d">Pusat kawalan sekolah, trip & import data.</span>
                 </div>
             </a>
+            
+            <a href="pss_delivery.php" class="nav-card">
+                <div class="icon-box bg-success text-white"><i class="bi bi-mortarboard-fill"></i></div>
+                <div class="content">
+                    <span class="title" data-lang="card_pss_delivery">School Delivery (PSS)</span>
+                    <span class="desc" data-lang="card_pss_delivery_d">Proses dokumen DO bagi projek Susu Sekolah.</span>
+                </div>
+            </a>
+
             <?php if ($is_staff): ?>
-            <a href="import_co_ui.php" class="nav-card">
-                <div class="icon-box bg-warning text-dark"><i class="bi bi-file-earmark-excel"></i></div>
-                <div class="content">
-                    <span class="title" data-lang="card_co_import">Monthly CO Import</span>
-                    <span class="desc" data-lang="card_co_import_d">Import data CO & jana fail SAP sekolah.</span>
-                </div>
-            </a>
-            <a href="view_batch.php" class="nav-card">
-                <div class="icon-box bg-secondary text-white"><i class="bi bi-archive"></i></div>
-                <div class="content">
-                    <span class="title" data-lang="card_batch_arch">Batch Archives</span>
-                    <span class="desc" data-lang="card_batch_arch_d">Rekod arkib laporan SAP yang dijana.</span>
-                </div>
-            </a>
             <a href="import_master.php" class="nav-card">
                 <div class="icon-box bg-success-subtle text-success"><i class="bi bi-file-earmark-spreadsheet"></i></div>
                 <div class="content">
