@@ -351,11 +351,11 @@ require_once 'includes/header.php';
     <div class="container-fluid px-4">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h1 class="fw-800 mb-1"><i class="bi bi-truck me-2"></i>PSS Logistics Command</h1>
-                <p class="opacity-75 mb-0 fw-light">Susu Sekolah (PSS) Real-time Monitor & Van Trip Dispatch</p>
+                <h1 class="fw-800 mb-1"><i class="bi bi-truck me-2"></i><span data-lang="pss_hub_title">PSS Logistics Command</span></h1>
+                <p class="opacity-75 mb-0 fw-light" data-lang="pss_hub_subtitle">Susu Sekolah (PSS) Real-time Monitor & Van Trip Dispatch</p>
             </div>
             <div class="d-flex gap-2">
-                <a href="index.php" class="btn btn-outline-light"><i class="bi bi-house me-1"></i> Dashboard</a>
+                <a href="index.php" class="btn btn-outline-light"><i class="bi bi-house me-1"></i> <span data-lang="nav_dashboard">Dashboard</span></a>
             </div>
         </div>
     </div>
@@ -364,8 +364,8 @@ require_once 'includes/header.php';
 <div class="container px-4 pb-5">
     
     <div class="d-flex justify-content-between align-items-center mb-3 no-print">
-        <h3 class="fw-bold text-navy mb-0"><i class="bi bi-display me-2 text-primary"></i>Logistics Monitor & Control</h3>
-        <span class="badge bg-primary px-3 py-2 rounded-pill text-uppercase" style="letter-spacing: 0.5px;">AKSES: <?= htmlspecialchars($role) ?></span>
+        <h3 class="fw-bold text-navy mb-0"><i class="bi bi-display me-2 text-primary"></i><span data-lang="pss_hub_control">Logistics Monitor & Control</span></h3>
+        <span class="badge bg-primary px-3 py-2 rounded-pill text-uppercase" style="letter-spacing: 0.5px;"><span data-lang="pss_hub_access">AKSES</span>: <?= htmlspecialchars($role) ?></span>
     </div>
 
     <!-- Overall real-time progress bar -->
@@ -377,15 +377,15 @@ require_once 'includes/header.php';
     <!-- Stats grid -->
     <div class="stock-grid no-print">
         <div class="stock-card" style="border-left-color: var(--mms-cyan);">
-            <small class="stat-label">Jumlah Sekolah</small><br>
+            <small class="stat-label" data-lang="pss_hub_schools">Jumlah Sekolah</small><br>
             <b class="stat-value" id="statsSchools"><?= number_format($total_schools) ?></b>
         </div>
         <div class="stock-card" style="border-left-color: var(--mms-success);">
-            <small class="stat-label">Selesai Dihantar</small><br>
+            <small class="stat-label" data-lang="pss_hub_delivered">Selesai Dihantar</small><br>
             <b class="stat-value text-success" id="statsDelivered"><?= number_format($total_delivered) ?></b>
         </div>
         <div class="stock-card" style="border-left-color: var(--mms-warning);">
-            <small class="stat-label">Jumlah Karton</small><br>
+            <small class="stat-label" data-lang="pss_hub_cartons">Jumlah Karton</small><br>
             <b class="stat-value text-warning" id="statsCartons"><?= number_format($total_cartons) ?></b>
         </div>
     </div>
@@ -393,19 +393,19 @@ require_once 'includes/header.php';
     <!-- Analytics per-dealer table (admin/staff only) -->
     <?php if ($role === 'admin' || $role === 'staff'): ?>
     <div class="analytics-card no-print">
-        <h5 class="fw-bold"><i class="bi bi-bar-chart-line-fill me-2"></i>Analytics — Kemajuan per Dealer / HD</h5>
+        <h5 class="fw-bold"><i class="bi bi-bar-chart-line-fill me-2"></i><span data-lang="pss_hub_analytics_title">Analytics — Kemajuan per Dealer / HD</span></h5>
         <div class="table-wrapper">
             <table id="analyticsTable" class="w-100">
                 <thead>
                     <tr>
-                        <th style="width:130px;">Dealer</th>
-                        <th>Sekolah</th>
-                        <th style="width:140px;">Progress (%)</th>
-                        <th>Baki Muatan</th>
+                        <th style="width:130px;" data-lang="pss_hub_col_dealer">Dealer</th>
+                        <th data-lang="pss_hub_col_schools">Sekolah</th>
+                        <th style="width:140px;" data-lang="pss_hub_col_progress">Progress (%)</th>
+                        <th data-lang="pss_hub_col_cargo">Baki Muatan</th>
                     </tr>
                 </thead>
                 <tbody id="dealerSummaryBody">
-                    <tr><td colspan="4" class="text-center text-muted py-3">Memuatkan data...</td></tr>
+                    <tr><td colspan="4" class="text-center text-muted py-3" data-lang="pss_hub_loading">Memuatkan data...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -414,15 +414,15 @@ require_once 'includes/header.php';
     <!-- PERLU / SIAP / BAKI summary cards -->
     <div class="summary-cards no-print">
         <div class="summary-card" style="border-left-color:#3b82f6;">
-            <div class="sc-label text-primary">🔵 Perlu Dihantar (Total)</div>
+            <div class="sc-label text-primary">🔵 <span data-lang="pss_hub_sum_perlu">Perlu Dihantar (Total)</span></div>
             <div class="sc-value text-primary" id="sumPerlu">—</div>
         </div>
         <div class="summary-card" style="border-left-color:#10b981;">
-            <div class="sc-label text-success">🟢 Siap Dihantar</div>
+            <div class="sc-label text-success">🟢 <span data-lang="pss_hub_sum_siap">Siap Dihantar</span></div>
             <div class="sc-value text-success" id="sumSiap">—</div>
         </div>
         <div class="summary-card" style="border-left-color:#ef4444;">
-            <div class="sc-label text-danger">🔴 Baki Belum Hantar</div>
+            <div class="sc-label text-danger">🔴 <span data-lang="pss_hub_sum_baki">Baki Belum Hantar</span></div>
             <div class="sc-value text-danger" id="sumBaki">—</div>
         </div>
     </div>
@@ -431,41 +431,52 @@ require_once 'includes/header.php';
     <!-- Admin Setup Tools -->
     <?php if ($role === 'admin' || $role === 'staff'): ?>
     <div id="adminArea" class="setup-grid no-print">
-        <h5 class="fw-bold text-primary mb-3"><i class="bi bi-sliders me-2"></i>Alatan Admin & Pengurusan PSS</h5>
+        <h5 class="fw-bold text-primary mb-3"><i class="bi bi-sliders me-2"></i><span data-lang="pss_hub_admin_tools">Alatan Admin & Pengurusan PSS</span></h5>
         <div class="row g-3">
             <div class="col-md-4">
-                <label class="form-label fw-bold">📅 Bilangan Hari Minum</label>
+                <label class="form-label fw-bold">📅 <span data-lang="pss_hub_drinking_days">Bilangan Hari Minum</span></label>
                 <input type="number" id="globalMultiplier" class="form-control" value="32" onchange="processAndRender()">
             </div>
             <div class="col-md-8">
-                <label class="form-label fw-bold">Muat Naik Data Excel Sekolah (.xlsx / .xls)</label>
+                <label class="form-label fw-bold" data-lang="pss_hub_upload_excel">Muat Naik Data Excel Sekolah (.xlsx / .xls)</label>
                 <div class="input-group">
                     <input type="file" id="excelInput" class="form-control" accept=".xlsx, .xls">
-                    <button onclick="saveDataToServer()" id="saveBtn" class="btn btn-success fw-bold px-4" style="display:none;"><i class="bi bi-cloud-upload me-1"></i> Simpan ke DB</button>
+                    <button onclick="saveDataToServer()" id="saveBtn" class="btn btn-success fw-bold px-4" style="display:none;"><i class="bi bi-cloud-upload me-1"></i> <span data-lang="pss_hub_save_db">Simpan ke DB</span></button>
                 </div>
             </div>
         </div>
         <hr class="my-4">
         <div class="row g-3">
             <div class="col-md-4">
-                <label class="form-label small fw-bold text-muted text-uppercase">Tapis Mengikut Dealer (HD)</label>
+                <label class="form-label small fw-bold text-muted text-uppercase" data-lang="pss_hub_filter_dealer">Tapis Mengikut Dealer (HD)</label>
                 <select id="adminDealerFilter" onchange="processAndRender()" class="form-select"></select>
             </div>
             <div class="col-md-4">
-                <label class="form-label small fw-bold text-muted text-uppercase">Tapis Mengikut Daerah</label>
+                <label class="form-label small fw-bold text-muted text-uppercase" data-lang="pss_hub_filter_district">Tapis Mengikut Daerah</label>
                 <select id="adminDistrictFilter" onchange="processAndRender()" class="form-select"></select>
             </div>
             <div class="col-md-4">
-                <label class="form-label small fw-bold text-muted text-uppercase">Tapis Mengikut CO / Cycle</label>
+                <label class="form-label small fw-bold text-muted text-uppercase" data-lang="pss_hub_filter_co">Tapis Mengikut CO / Cycle</label>
                 <select id="adminCoFilter" onchange="processAndRender()" class="form-select"></select>
             </div>
         </div>
     </div>
     <?php else: ?>
+    <!-- Dealer Filters -->
+    <div class="setup-grid no-print mb-4" style="background: #f8fafc; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted text-uppercase" data-lang="pss_hub_filter_district">Tapis Mengikut Daerah</label>
+                <select id="adminDistrictFilter" onchange="processAndRender()" class="form-select"></select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted text-uppercase" data-lang="pss_hub_filter_co">Tapis Mengikut CO / Cycle</label>
+                <select id="adminCoFilter" onchange="processAndRender()" class="form-select"></select>
+            </div>
+        </div>
         <!-- Hidden elements for script references on dealer dashboard -->
         <select id="adminDealerFilter" style="display:none;"></select>
-        <select id="adminDistrictFilter" style="display:none;"></select>
-        <select id="adminCoFilter" style="display:none;"></select>
+    </div>
     <?php endif; ?>
 
     <!-- Display area for grouped days -->
@@ -473,22 +484,22 @@ require_once 'includes/header.php';
 
     <!-- Vehicles List configuration -->
     <div id="vehicleSection" class="card shadow-sm border-0 p-4 mt-4 no-print" style="background:#f8fafc; border-radius:16px;">
-        <h5 class="fw-bold text-navy mb-3"><i class="bi bi-truck-flatbed me-2 text-primary"></i>Daftar Kenderaan Master PSS</h5>
+        <h5 class="fw-bold text-navy mb-3"><i class="bi bi-truck-flatbed me-2 text-primary"></i><span data-lang="pss_hub_vehicles_title">Daftar Kenderaan Master PSS</span></h5>
         <div id="vehicleList" class="mb-3"></div>
         <div class="d-flex gap-2">
-            <button onclick="addVehicleRow()" class="btn btn-outline-primary fw-bold btn-sm"><i class="bi bi-plus-lg me-1"></i> Tambah Lori / Van</button>
-            <button onclick="saveVehicles()" class="btn btn-primary fw-bold btn-sm"><i class="bi bi-save me-1"></i> Simpan Senarai Kenderaan</button>
+            <button onclick="addVehicleRow()" class="btn btn-outline-primary fw-bold btn-sm"><i class="bi bi-plus-lg me-1"></i> <span data-lang="pss_hub_btn_add_vehicle">Tambah Lori / Van</span></button>
+            <button onclick="saveVehicles()" class="btn btn-primary fw-bold btn-sm"><i class="bi bi-save me-1"></i> <span data-lang="pss_hub_btn_save_vehicles">Simpan Senarai Kenderaan</span></button>
         </div>
     </div>
 
     <!-- Trip Engine -->
     <div id="tripArea" class="card shadow-sm border-0 p-4 mt-4 no-print" style="background:#fffbeb; border-radius:16px; border:1px solid #fef3c7;">
-        <h5 class="fw-bold text-warning mb-2"><i class="bi bi-lightning-charge-fill me-2"></i>Janaan Trip & Muatan Van</h5>
-        <p class="text-muted small">Pilih tarikh penghantaran dan lori untuk melakukan simulasi muatan lori.</p>
+        <h5 class="fw-bold text-warning mb-2"><i class="bi bi-lightning-charge-fill me-2"></i><span data-lang="pss_hub_trip_title">Janaan Trip & Muatan Van</span></h5>
+        <p class="text-muted small" data-lang="pss_hub_trip_desc">Pilih tarikh penghantaran dan lori untuk melakukan simulasi muatan lori.</p>
         
         <div class="row g-3 align-items-end">
             <div class="col-md-8">
-                <label class="form-label fw-bold">Pilih Tarikh untuk Dijana:</label>
+                <label class="form-label fw-bold" data-lang="pss_hub_trip_select_date">Pilih Tarikh untuk Dijana:</label>
                 <select id="filterDateSelect" onchange="loadPriorityList()" class="form-select"></select>
             </div>
             <div class="col-md-4">
@@ -497,11 +508,11 @@ require_once 'includes/header.php';
         </div>
 
         <div id="priorityArea" style="display:none;" class="mt-4">
-            <label class="form-label fw-bold"><i class="bi bi-sort-down me-1"></i>Susun Keutamaan Sekolah (Drag/Guna Anak Panah):</label>
+            <label class="form-label fw-bold"><i class="bi bi-sort-down me-1"></i><span data-lang="pss_hub_trip_priority">Susun Keutamaan Sekolah (Drag/Guna Anak Panah):</span></label>
             <div id="priorityList" class="mb-3" style="max-height: 250px; overflow-y: auto;"></div>
             
             <div class="d-grid mt-3">
-                <button onclick="calculateTrips()" class="btn btn-warning btn-lg fw-bold text-dark py-3"><i class="bi bi-play-fill me-1"></i> JANA ARAHAN TRIP & MUATAN</button>
+                <button onclick="calculateTrips()" class="btn btn-warning btn-lg fw-bold text-dark py-3"><i class="bi bi-play-fill me-1"></i> <span data-lang="pss_hub_btn_generate_trip">JANA ARAHAN TRIP & MUATAN</span></button>
             </div>
         </div>
     </div>
@@ -510,7 +521,7 @@ require_once 'includes/header.php';
     <div id="results" style="display:none;" class="mt-4 card shadow-sm border-0 p-4">
         <div id="tripDetails"></div>
         <div class="d-flex gap-2 mt-3 no-print">
-            <button onclick="window.print()" class="btn btn-secondary fw-bold w-100 py-2.5"><i class="bi bi-printer-fill me-1"></i> Cetak Jadual Trip</button>
+            <button onclick="window.print()" class="btn btn-secondary fw-bold w-100 py-2.5"><i class="bi bi-printer-fill me-1"></i> <span data-lang="pss_hub_btn_print">Cetak Jadual Trip</span></button>
         </div>
     </div>
 
@@ -534,10 +545,19 @@ require_once 'includes/header.php';
     }
 
     function formatTarikhCantik(dateStr) {
-        if (!dateStr || dateStr === "Tiada Tarikh" || dateStr === "0000-00-00") return "Tiada Tarikh";
+        const fallbackStr = typeof MMS_LANG !== 'undefined' ? MMS_LANG.t('pss_hub_main_no_date') : "Tiada Tarikh";
+        if (!dateStr || dateStr === "Tiada Tarikh" || dateStr === "0000-00-00" || dateStr === "No Date") return fallbackStr;
         const d = new Date(dateStr);
-        const hari = ["Ahad", "Isnin", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu"];
-        const bulan = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogos", "Sep", "Okt", "Nov", "Dis"];
+        if (isNaN(d.getTime())) return dateStr;
+        
+        const isMs = typeof MMS_LANG !== 'undefined' && MMS_LANG.current() === 'ms';
+        const hari = isMs 
+            ? ["Ahad", "Isnin", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu"]
+            : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const bulan = isMs
+            ? ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogos", "Sep", "Okt", "Nov", "Dis"]
+            : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            
         return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}, ${hari[d.getDay()]}`;
     }
 
@@ -594,9 +614,14 @@ require_once 'includes/header.php';
         const districts = [...new Set(schoolsData.map(s => s.district))].filter(Boolean).sort();
         const cos       = [...new Set(schoolsData.map(s => s.co_no))].filter(Boolean).sort();
 
-        dSel.innerHTML = '<option value="all">-- Semua Dealer --</option>' + dealers.map(d => `<option value="${d}">${d.toUpperCase()}</option>`).join('');
-        xSel.innerHTML = '<option value="all">-- Semua Daerah --</option>' + districts.map(d => `<option value="${d}">${d}</option>`).join('');
-        cSel.innerHTML = '<option value="all">-- Semua CO / Cycle --</option>' + cos.map(c => `<option value="${c}">${c}</option>`).join('');
+        const isMs = typeof MMS_LANG !== 'undefined' && MMS_LANG.current() === 'ms';
+        const optAllDealer = isMs ? '-- Semua Dealer --' : '-- All Dealers --';
+        const optAllDistrict = isMs ? '-- Semua Daerah --' : '-- All Districts --';
+        const optAllCo = isMs ? '-- Semua CO / Cycle --' : '-- All CO / Cycles --';
+
+        dSel.innerHTML = `<option value="all">${optAllDealer}</option>` + dealers.map(d => `<option value="${d}">${d.toUpperCase()}</option>`).join('');
+        xSel.innerHTML = `<option value="all">${optAllDistrict}</option>` + districts.map(d => `<option value="${d}">${d}</option>`).join('');
+        cSel.innerHTML = `<option value="all">${optAllCo}</option>` + cos.map(c => `<option value="${c}">${c}</option>`).join('');
     }
 
     function processAndRender() {
@@ -611,7 +636,7 @@ require_once 'includes/header.php';
         if (currentRole === 'admin' || currentRole === 'staff') {
             if (sd && sd !== 'all') fD = fD.filter(x => x.dealer === sd);
         } else {
-            fD = fD.filter(x => x.dealer === currentDealer);
+            fD = fD.filter(x => x.dealer && x.dealer.toLowerCase() === currentDealer.toLowerCase());
         }
         if (sx && sx !== 'all') fD = fD.filter(x => x.district === sx);
         if (sc && sc !== 'all') fD = fD.filter(x => x.co_no === sc);
@@ -629,9 +654,11 @@ require_once 'includes/header.php';
             }
         });
 
+        const isMs = typeof MMS_LANG !== 'undefined' && MMS_LANG.current() === 'ms';
+        const progressLabel = isMs ? 'Progres Kitaran' : 'Cycle Progress';
         const percent = totalCtn ? Math.round((doneCtn / totalCtn) * 100) : 0;
         document.getElementById('overallBar').style.width = percent + "%";
-        document.getElementById('overallText').innerText = `Progres Kitaran: ${percent}% (${doneCtn}/${totalCtn} Carton)`;
+        document.getElementById('overallText').innerText = `${progressLabel}: ${percent}% (${doneCtn}/${totalCtn} Carton)`;
 
         document.getElementById('statsSchools').innerText = totalSch;
         document.getElementById('statsDelivered').innerText = doneSch;
@@ -650,7 +677,8 @@ require_once 'includes/header.php';
         // Date Dropdown for Trip
         const dateSelect = document.getElementById('filterDateSelect');
         const activeDates = Object.keys(grp).filter(d => d !== "Tiada Tarikh" && d !== "0000-00-00").sort();
-        dateSelect.innerHTML = '<option value="">-- Sila Pilih Tarikh --</option>' + 
+        const optSelectDate = isMs ? '-- Sila Pilih Tarikh --' : '-- Please Select Date --';
+        dateSelect.innerHTML = `<option value="">${optSelectDate}</option>` + 
             activeDates.map(d => `<option value="${d}">${formatTarikhCantik(d)}</option>`).join('');
 
         Object.keys(grp).sort().forEach(dt => {
@@ -662,19 +690,27 @@ require_once 'includes/header.php';
 
             const dayDiv = document.createElement('div');
             dayDiv.className = 'day-section';
+            
+            const dailyLoadText = typeof MMS_LANG !== 'undefined' ? MMS_LANG.t('pss_hub_daily_load') : 'Muatan Harian';
+            const colSchool = typeof MMS_LANG !== 'undefined' ? MMS_LANG.t('pss_hub_main_school') : 'Sekolah / Lokasi';
+            const colDelivery = typeof MMS_LANG !== 'undefined' ? MMS_LANG.t('pss_hub_main_delivery') : 'Penghantaran';
+            const colSap = typeof MMS_LANG !== 'undefined' ? MMS_LANG.t('pss_hub_main_sap') : 'SAP (Kunci)';
+            const colDate = typeof MMS_LANG !== 'undefined' ? MMS_LANG.t('pss_hub_main_date') : 'Perancangan Tarikh';
+            const balanceLabel = typeof MMS_LANG !== 'undefined' ? MMS_LANG.t('pss_hub_main_balance') : 'Baki';
+
             dayDiv.innerHTML = `
                 <div class="day-header">📅 ${formatTarikhCantik(dt)}</div>
                 <div class="day-summary">
-                    <i class="bi bi-box-seam-fill"></i> Muatan Harian: ${calcFullMuatan(rC, rP)}
+                    <i class="bi bi-box-seam-fill"></i> ${dailyLoadText}: ${calcFullMuatan(rC, rP)}
                 </div>
                 <div class="table-wrapper">
                     <table class="align-middle">
                         <thead>
                             <tr>
-                                <th>Sekolah / Lokasi</th>
-                                <th class="text-center" style="width:100px;">Penghantaran</th>
-                                <th class="text-center" style="width:100px;">SAP (Kunci)</th>
-                                <th class="text-end" style="width:180px;">Perancangan Tarikh</th>
+                                <th>${colSchool}</th>
+                                <th class="text-center" style="width:100px;">${colDelivery}</th>
+                                <th class="text-center" style="width:100px;">${colSap}</th>
+                                <th class="text-end" style="width:180px;">${colDate}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -686,11 +722,12 @@ require_once 'includes/header.php';
                                         <span class="badge bg-secondary font-monospace fs-7 me-1">${s.co_no}</span>
                                         <strong>${s.name}</strong>
                                         <br>
-                                        <small class="text-muted">${s.district} | Baki: ${s.totalCartons} ctn${extraText} | HD: ${s.dealer.toUpperCase()}</small>
+                                        <small class="text-muted">${s.district} | ${balanceLabel}: ${s.totalCartons} ctn${extraText} | HD: ${s.dealer.toUpperCase()}</small>
                                     </td>
                                     <td class="text-center">
                                         <input type="checkbox" class="form-check-input" ${s.isDelivered ? 'checked' : ''} 
                                                onchange="updateRec('${s.id}', 'isDelivered', this.checked)">
+                                        ${s.isDelivered && s.delivery_date ? `<br><small class="text-success d-block fw-bold mt-1" style="font-size: 0.72rem; line-height: 1.1;"><i class="bi bi-clock me-1"></i>${formatDateTime(s.delivery_date)}</small>` : ''}
                                     </td>
                                     <td class="text-center">
                                         <input type="checkbox" class="form-check-input" ${s.isDocSigned ? 'checked' : ''} 
@@ -700,8 +737,7 @@ require_once 'includes/header.php';
                                         <input type="date" class="form-control form-control-sm d-inline-block text-center" 
                                                value="${s.plan_date || ''}" 
                                                onchange="updateRec('${s.id}', 'plan_date', this.value)" 
-                                               style="width:140px; font-size:0.8rem;"
-                                               ${currentRole !== 'admin' && currentRole !== 'staff' ? 'disabled' : ''}>
+                                               style="width:140px; font-size:0.8rem;">
                                     </td>
                                 </tr>`;
                             }).join('')}
@@ -712,7 +748,8 @@ require_once 'includes/header.php';
         });
 
         if (Object.keys(grp).length === 0) {
-            container.innerHTML = '<p class="text-center text-muted py-5">Tiada sekolah ditemui untuk tapisan semasa.</p>';
+            const emptyText = typeof MMS_LANG !== 'undefined' ? MMS_LANG.t('pss_hub_main_empty') : 'Tiada sekolah ditemui untuk tapisan semasa.';
+            container.innerHTML = `<p class="text-center text-muted py-5">${emptyText}</p>`;
         }
     }
 
@@ -767,7 +804,8 @@ require_once 'includes/header.php';
         }).join('');
 
         if (dealers.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">Tiada data dealer.</td></tr>';
+            const isMs = typeof MMS_LANG !== 'undefined' && MMS_LANG.current() === 'ms';
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-3">${isMs ? 'Tiada data dealer.' : 'No dealer data.'}</td></tr>`;
         }
 
         // Summary cards
@@ -779,13 +817,51 @@ require_once 'includes/header.php';
     }
 
 
+    function formatDateTime(dtStr) {
+        if (!dtStr || dtStr === "0000-00-00 00:00:00" || dtStr === "0000-00-00") return "";
+        try {
+            const parts = dtStr.split(' ');
+            const datePart = parts[0];
+            const timePart = parts[1] || '';
+            
+            const d = new Date(datePart);
+            if (isNaN(d.getTime())) return dtStr;
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            
+            let formatted = `${day}/${month}/${year}`;
+            if (timePart) {
+                const tParts = timePart.split(':');
+                if (tParts.length >= 2) {
+                    formatted += ` ${tParts[0]}:${tParts[1]}`;
+                }
+            }
+            return formatted;
+        } catch (e) {
+            return dtStr;
+        }
+    }
+
     async function updateRec(id, field, value) {
         const s = schoolsData.find(x => x.id === id);
         if (!s) return;
         
+        const isMs = typeof MMS_LANG !== 'undefined' && MMS_LANG.current() === 'ms';
         s[field] = value;
-        if (field === 'isDelivered' && value && !s.delivery_date) {
-            s.delivery_date = new Date().toISOString().split('T')[0];
+        if (field === 'isDelivered') {
+            if (value) {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                s.delivery_date = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            } else {
+                s.delivery_date = null;
+            }
         }
 
         try {
@@ -794,10 +870,10 @@ require_once 'includes/header.php';
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify([s])
             });
-            showToast(`Kemaskini berjaya: ${s.name}`);
+            showToast((isMs ? `Kemaskini berjaya: ` : `Update successful: `) + s.name);
             processAndRender();
         } catch (e) {
-            showToast('Gagal mengemas kini rekod.');
+            showToast(isMs ? 'Gagal mengemas kini rekod.' : 'Failed to update record.');
         }
     }
 
@@ -810,13 +886,15 @@ require_once 'includes/header.php';
         list.innerHTML = '';
         chk.innerHTML = '';
 
+        const capPlaceholder = typeof MMS_LANG !== 'undefined' ? MMS_LANG.t('pss_hub_vehicles_cap') : 'Kapasiti';
+
         if (Array.isArray(registeredVehicles)) {
             registeredVehicles.forEach(v => {
                 list.innerHTML += `
                 <div class="v-row">
                     <span class="badge bg-secondary font-monospace" style="min-width:60px;">${v.owner}</span>
                     <input type="text" class="form-control form-control-sm v-name" value="${v.v_name}" style="flex:1;">
-                    <input type="number" class="form-control form-control-sm v-cap" value="${v.v_capacity}" style="width:90px;" placeholder="Kapasiti">
+                    <input type="number" class="form-control form-control-sm v-cap" value="${v.v_capacity}" style="width:90px;" placeholder="${capPlaceholder}">
                     <button onclick="this.parentElement.remove()" class="btn btn-outline-danger btn-sm p-1.5 border-0"><i class="bi bi-trash"></i></button>
                 </div>`;
 
@@ -830,16 +908,20 @@ require_once 'includes/header.php';
     }
 
     function addVehicleRow() {
+        const isMs = typeof MMS_LANG !== 'undefined' && MMS_LANG.current() === 'ms';
+        const namePlaceholder = isMs ? 'Nama Lori / No Plate' : 'Truck Name / Plate No';
+        const capPlaceholder = isMs ? 'Kapasiti Karton' : 'Ctn Capacity';
         document.getElementById('vehicleList').innerHTML += `
         <div class="v-row">
             <span class="badge bg-secondary font-monospace" style="min-width:60px;">${currentDealer}</span>
-            <input type="text" class="form-control form-control-sm v-name" placeholder="Nama Lori / No Plate" style="flex:1;">
-            <input type="number" class="form-control form-control-sm v-cap" placeholder="Ctn Cap" style="width:90px;">
+            <input type="text" class="form-control form-control-sm v-name" placeholder="${namePlaceholder}" style="flex:1;">
+            <input type="number" class="form-control form-control-sm v-cap" placeholder="${capPlaceholder}" style="width:90px;">
             <button onclick="this.parentElement.remove()" class="btn btn-outline-danger btn-sm p-1.5 border-0"><i class="bi bi-trash"></i></button>
         </div>`;
     }
 
     async function saveVehicles() {
+        const isMs = typeof MMS_LANG !== 'undefined' && MMS_LANG.current() === 'ms';
         const rows = document.querySelectorAll('.v-row');
         const data = Array.from(rows).map(r => ({
             v_name: r.querySelector('.v-name').value,
@@ -853,10 +935,10 @@ require_once 'includes/header.php';
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(data)
             });
-            showToast("Senarai kenderaan disimpan!");
+            showToast(isMs ? "Senarai kenderaan disimpan!" : "Vehicle list saved!");
             await loadVehicles();
         } catch (e) {
-            showToast("Gagal menyimpan senarai kenderaan.");
+            showToast(isMs ? "Gagal menyimpan senarai kenderaan." : "Failed to save vehicle list.");
         }
     }
 
@@ -899,15 +981,21 @@ require_once 'includes/header.php';
             v_capacity: Number(cb.dataset.cap)
         }));
 
-        if (activeV.length === 0) return alert("Sila pilih sekurang-kurangnya sebuah kenderaan!");
+        const isMs = typeof MMS_LANG !== 'undefined' && MMS_LANG.current() === 'ms';
+        if (activeV.length === 0) return alert(isMs ? "Sila pilih sekurang-kurangnya sebuah kenderaan!" : "Please select at least one vehicle!");
 
         let q = JSON.parse(JSON.stringify(currentPriorityQueue));
-        let html = `<h4 class="fw-bold mb-3 border-bottom pb-2 text-primary no-print"><i class="bi bi-file-earmark-text-fill me-2"></i>Arahan Trip Penghantaran: ${formatTarikhCantik(date)}</h4>`;
+        const tripInstr = typeof MMS_LANG !== 'undefined' ? MMS_LANG.t('pss_hub_trip_instr') : 'Arahan Trip Penghantaran:';
+        const tripLabel = typeof MMS_LANG !== 'undefined' ? MMS_LANG.t('pss_hub_trip_label') : 'TRIP';
+        const loadLabel = typeof MMS_LANG !== 'undefined' ? MMS_LANG.t('pss_hub_trip_load') : 'Muatan';
+        const splitLabel = typeof MMS_LANG !== 'undefined' ? MMS_LANG.t('pss_hub_trip_split') : 'Baki/Pecahan';
+
+        let html = `<h4 class="fw-bold mb-3 border-bottom pb-2 text-primary no-print"><i class="bi bi-file-earmark-text-fill me-2"></i>${tripInstr} ${formatTarikhCantik(date)}</h4>`;
         let tripNum = 1;
 
         while (q.length > 0) {
             html += `<div class="trip-block">
-                <h5 class="fw-bold text-navy mb-3"><i class="bi bi-truck me-2"></i>TRIP ${tripNum}</h5>`;
+                <h5 class="fw-bold text-navy mb-3"><i class="bi bi-truck me-2"></i>${tripLabel} ${tripNum}</h5>`;
             
             activeV.forEach(v => {
                 let cap = v.v_capacity;
@@ -926,7 +1014,7 @@ require_once 'includes/header.php';
                     } else {
                         current += space;
                         s.totalCartons = sCtn - space;
-                        list.push(`<li>${s.name} (Baki/Pecahan): <b>${space} ctn</b></li>`);
+                        list.push(`<li>${s.name} (${splitLabel}): <b>${space} ctn</b></li>`);
                         break;
                     }
                 }
@@ -939,7 +1027,7 @@ require_once 'includes/header.php';
                     html += `
                     <div class="van-info">
                         <span class="van-badge ${badgeClass}">${v.v_name}</span>
-                        <strong>Muatan: ${current} ctn</strong>
+                        <strong>${loadLabel}: ${current} ctn</strong>
                         <ul class="mb-0 mt-2 text-secondary" style="font-size:0.85rem;">${list.join('')}</ul>
                     </div>`;
                 }
@@ -953,10 +1041,13 @@ require_once 'includes/header.php';
     }
 
     // Excel Parser (Old System logic)
-    document.getElementById('excelInput').addEventListener('change', function(e) {
+    const excelEl = document.getElementById('excelInput');
+    if (excelEl) {
+        excelEl.addEventListener('change', function(e) {
         const file = e.target.files[0];
         const reader = new FileReader();
         const multiplier = Number(document.getElementById('globalMultiplier').value);
+        const isMs = typeof MMS_LANG !== 'undefined' && MMS_LANG.current() === 'ms';
 
         reader.onload = function(evt) {
             const data = new Uint8Array(evt.target.result);
@@ -990,11 +1081,12 @@ require_once 'includes/header.php';
             });
 
             document.getElementById('saveBtn').style.display = 'inline-block';
-            showToast("Excel parsed. Klik 'Simpan ke DB' untuk menyegerakkan data.");
+            showToast(isMs ? "Excel parsed. Klik 'Simpan ke DB' untuk menyegerakkan data." : "Excel parsed. Click 'Save to DB' to sync.");
             processAndRender();
         };
         reader.readAsArrayBuffer(file);
-    });
+        });
+    }
 
     function parseExcelDate(d) {
         if (!d) return new Date().toISOString().split('T')[0];
@@ -1008,6 +1100,7 @@ require_once 'includes/header.php';
 
     async function saveDataToServer() {
         if (!schoolsData.length) return;
+        const isMs = typeof MMS_LANG !== 'undefined' && MMS_LANG.current() === 'ms';
         try {
             await fetch('api_pss.php?action=save_schools', {
                 method: 'POST',
@@ -1015,10 +1108,10 @@ require_once 'includes/header.php';
                 body: JSON.stringify(schoolsData)
             });
             document.getElementById('saveBtn').style.display = 'none';
-            showToast("Data PSS berjaya disegerakkan ke pangkalan data.");
+            showToast(isMs ? "Data PSS berjaya disegerakkan ke pangkalan data." : "PSS data successfully synced to the database.");
             loadDataFromServer();
         } catch (e) {
-            showToast("Sync Error");
+            showToast(isMs ? "Sync Error" : "Sync Error");
         }
     }
 

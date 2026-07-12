@@ -42,7 +42,7 @@ if ($action == 'save_vehicles_global') {
 if ($action == 'get_schools') {
     $dealer = $_GET['dealer'] ?? '';
     $role = $_GET['role'] ?? '';
-    if ($role == 'admin') {
+    if ($role == 'admin' || $role == 'staff') {
         $stmt = $pdo->query("SELECT * FROM mms_logistik ORDER BY co_no DESC, plan_date ASC, name ASC");
     } else {
         $stmt = $pdo->prepare("SELECT * FROM mms_logistik WHERE dealer = ? ORDER BY co_no DESC, plan_date ASC, name ASC");
@@ -68,8 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($action == 'save_schools' || $acti
                 isDocSigned=VALUES(isDocSigned)");
             $stmt->execute([
                 $s['id'], $s['name'], $s['district'], $s['dealer'], $s['co_no'], 
-                $s['plan_date'] ?: '0000-00-00', 
-                $s['delivery_date'] ?: '0000-00-00', 
+                $s['plan_date'] ?: null, 
+                !empty($s['delivery_date']) ? $s['delivery_date'] : null, 
                 $s['totalCartons'], $s['extraPacks'], 
                 $s['isDelivered'] ? 1 : 0, 
                 $s['isDocSigned'] ? 1 : 0

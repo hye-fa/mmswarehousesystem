@@ -361,6 +361,7 @@ require_once 'includes/header.php';
                                     <td class="text-center">
                                         <input type="checkbox" class="form-check-input" ${s.isDelivered ? 'checked' : ''} 
                                                onchange="updateRec('${s.id}', 'isDelivered', this.checked)">
+                                        ${s.isDelivered && s.delivery_date ? `<br><small class="text-success d-block fw-bold mt-1" style="font-size: 0.72rem; line-height: 1.1;"><i class="bi bi-clock me-1"></i>${formatDateTime(s.delivery_date)}</small>` : ''}
                                     </td>
                                     <td class="text-center">
                                         <input type="checkbox" class="form-check-input" ${s.isDocSigned ? 'checked' : ''} 
@@ -382,13 +383,50 @@ require_once 'includes/header.php';
         }
     }
 
+    function formatDateTime(dtStr) {
+        if (!dtStr || dtStr === "0000-00-00 00:00:00" || dtStr === "0000-00-00") return "";
+        try {
+            const parts = dtStr.split(' ');
+            const datePart = parts[0];
+            const timePart = parts[1] || '';
+            
+            const d = new Date(datePart);
+            if (isNaN(d.getTime())) return dtStr;
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            
+            let formatted = `${day}/${month}/${year}`;
+            if (timePart) {
+                const tParts = timePart.split(':');
+                if (tParts.length >= 2) {
+                    formatted += ` ${tParts[0]}:${tParts[1]}`;
+                }
+            }
+            return formatted;
+        } catch (e) {
+            return dtStr;
+        }
+    }
+
     async function updateRec(id, field, value) {
         const s = schoolsData.find(x => x.id === id);
         if (!s) return;
         
         s[field] = value;
-        if (field === 'isDelivered' && value && !s.delivery_date) {
-            s.delivery_date = new Date().toISOString().split('T')[0];
+        if (field === 'isDelivered') {
+            if (value) {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                s.delivery_date = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            } else {
+                s.delivery_date = null;
+            }
         }
 
         try {
