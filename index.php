@@ -782,8 +782,10 @@ require_once 'includes/header.php';
                     });
 
                     let grandTotalCtn=0, grandDoneCtn=0, grandTotalExtra=0, grandDoneExtra=0;
+                    let grandTotalSchools=0, grandDoneSchools=0;
                     const tbody = document.getElementById('hdDealerSummaryBody');
-                    tbody.innerHTML = Object.keys(byDealer).sort().map(d => {
+                    
+                    const rowsHtml = Object.keys(byDealer).sort().map(d => {
                         const r = byDealer[d];
                         const p = r.total > 0 ? Math.round((r.done / r.total) * 100) : 0;
                         const bCtn = r.totalCtn - r.doneCtn;
@@ -792,8 +794,14 @@ require_once 'includes/header.php';
                         const complete = p >= 100;
                         const pc = p >= 100 ? '#10b981' : p >= 60 ? '#f59e0b' : '#ef4444';
                         const bgRow = complete ? 'background:#f0fdf4;' : '';
-                        grandTotalCtn   += r.totalCtn;   grandDoneCtn  += r.doneCtn;
-                        grandTotalExtra += r.extraTotal;  grandDoneExtra += r.extraDone;
+                        
+                        grandTotalSchools += r.total;
+                        grandDoneSchools  += r.done;
+                        grandTotalCtn     += r.totalCtn;
+                        grandDoneCtn      += r.doneCtn;
+                        grandTotalExtra   += r.extraTotal;
+                        grandDoneExtra    += r.extraDone;
+                        
                         return '<tr style="' + bgRow + '">' +
                             '<td style="padding:12px 18px;border-bottom:1px solid #f1f5f9;">' +
                                 '<span style="display:inline-block;background:#1e3a5f;color:#7dd3fc;font-family:monospace;font-size:0.7rem;font-weight:800;padding:2px 8px;border-radius:6px;">' + d.toUpperCase() + '</span>' +
@@ -810,6 +818,34 @@ require_once 'includes/header.php';
                             '</td>' +
                         '</tr>';
                     }).join('');
+
+                    const grandPercent = grandTotalCtn ? Math.round((grandDoneCtn / grandTotalCtn) * 100) : 0;
+                    const grandBakiCtn = grandTotalCtn - grandDoneCtn;
+                    const grandBakiEx  = grandTotalExtra - grandDoneExtra;
+                    const grandBakiStr = calcFullMuatan(grandBakiCtn, grandBakiEx) || '0 ctn';
+                    const grandComplete = grandPercent >= 100;
+
+                    const totalRowHtml = `
+                        <tr style="background:#f8fafc; font-weight:bold; border-top:2px solid #cbd5e1; position:sticky; bottom:0; z-index:1;">
+                            <td style="padding:14px 18px; border-bottom:none;">
+                                <span style="display:inline-block;background:#64748b;color:white;font-size:0.7rem;font-weight:800;padding:3px 10px;border-radius:6px;letter-spacing:0.5px;">TOTAL</span>
+                            </td>
+                            <td style="padding:14px 18px; border-bottom:none;">
+                                <span style="color:#0f172a;font-weight:800;">${grandDoneSchools}/${grandTotalSchools}</span> <span style="color:#64748b;font-size:0.78rem;">sekolah</span>
+                                <div style="background:#e2e8f0;border-radius:20px;height:7px;margin-top:6px;overflow:hidden;">
+                                    <div style="background:linear-gradient(90deg,#0ea5e9,#2563eb);height:100%;border-radius:20px;width:${grandPercent}%;transition:width 0.6s;"></div>
+                                </div>
+                            </td>
+                            <td style="padding:14px 18px; border-bottom:none;">
+                                <span style="display:inline-block;background:${grandComplete?'#dcfce7':'#e0f2fe'};color:${grandComplete?'#10b981':'#2563eb'};font-weight:800;font-size:0.85rem;padding:3px 12px;border-radius:20px;">${grandPercent}%</span>
+                            </td>
+                            <td style="padding:14px 18px; border-bottom:none; color:${grandComplete?'#10b981':'#ef4444'}; font-weight:800; font-size:0.82rem;">
+                                ${grandComplete ? '<i class="bi bi-check-circle-fill me-1"></i>Lengkap' : '(' + grandBakiStr + ')'}
+                            </td>
+                        </tr>
+                    `;
+
+                    tbody.innerHTML = rowsHtml + totalRowHtml;
 
                     // Summary cards
                     const bTotal = grandTotalCtn - grandDoneCtn;
