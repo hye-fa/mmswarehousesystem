@@ -197,7 +197,27 @@ require_once 'includes/header.php';
             width: 44px; height: 44px;
             font-size: 1.2rem;
             margin-right: 0.9rem;
-        }
+    /* Shimmer Progress bar for PSS */
+    .progress-wrap-hd {
+        background: rgba(255,255,255,0.12);
+        border-radius: 30px;
+        height: 38px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        margin-top: 15px;
+    }
+    .progress-fill-hd {
+        background: linear-gradient(90deg, #10b981, #34d399, #6ee7b7, #34d399);
+        background-size: 200% 100%;
+        animation: shimmer-hd 2.5s infinite linear;
+        height: 100%;
+        border-radius: 30px;
+        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes shimmer-hd {
+        0% { background-position: 200% center; }
+        100% { background-position: -200% center; }
     }
 </style>
 
@@ -207,17 +227,30 @@ require_once 'includes/header.php';
             <div class="col-md-8 d-flex flex-column flex-md-row align-items-center gap-3 text-center text-md-start">
                 <img src="img/logo.png" alt="MMS Logo" style="height: 60px; width: auto; border-radius: 12px; border: 2.5px solid rgba(255,255,255,0.25); box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
                 <div>
+                    <?php if ($is_staff): ?>
                     <h1 class="fw-800 mb-0" style="font-size: 2.1rem; letter-spacing: -0.5px;" data-lang="dash_title">MMS MASTER HUB</h1>
                     <p class="opacity-75 mb-0 fw-light" style="font-size: 0.92rem;" data-lang="dash_subtitle">Warehouse Management & Logistics Command Center</p>
+                    <?php else: ?>
+                    <h1 class="fw-800 mb-0" style="font-size: 2.1rem; letter-spacing: -0.5px;" data-lang="dash_dealer_title">PSS DELIVERIES COMMAND</h1>
+                    <p class="opacity-75 mb-0 fw-light" style="font-size: 0.92rem;" data-lang="dash_dealer_subtitle">School Milk Deliveries & Logistics Control Center</p>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
-                <div class="d-inline-block bg-white bg-opacity-10 p-2 rounded-3">
+                <div class="d-inline-block bg-white bg-opacity-10 p-2 rounded-3 text-white">
                     <i class="bi bi-calendar3 me-2 text-info"></i>
                     <span class="fw-bold"><?= date('l, d M Y') ?></span>
                 </div>
             </div>
         </div>
+        
+        <?php if (!$is_staff): ?>
+        <!-- Hero progress bar for dealer view -->
+        <div class="progress-wrap-hd mt-4">
+            <div class="progress-fill-hd" id="hdOverallBar" style="width: 0%;"></div>
+            <div id="hdOverallText" style="position:absolute; width:100%; text-align:center; top:50%; transform:translateY(-50%); font-weight:800; font-size:0.9rem; color:white; z-index:2; text-shadow:0 1px 3px rgba(0,0,0,0.35);">Memuatkan data PSS...</div>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -546,37 +579,39 @@ require_once 'includes/header.php';
         <?php else: ?>
         <!-- DEALER / HD VIEW: PSS Dashboard with Live Analytics -->
 
-        <!-- Section Title -->
-        <div class="col-12 text-center mb-2">
-            <div class="section-title text-center justify-content-center d-inline-block" style="border-left:none; border-bottom:4px solid #0ea5e9; padding-left:0; padding-bottom:8px; font-weight:800; font-size:1.1rem; color:#0f172a; text-transform:uppercase; letter-spacing:1px;" data-lang="sec_system_pss">
-                Pusat Kawalan Operasi PSS
-            </div>
-        </div>
-
-        <!-- Real-time Progress Bar -->
-        <div class="col-12">
-            <div style="background:#e2e8f0; border-radius:30px; height:38px; position:relative; overflow:hidden; box-shadow:inset 0 2px 4px rgba(0,0,0,0.06);">
-                <div id="hdOverallBar" style="background:linear-gradient(90deg,#10b981,#34d399); height:100%; border-radius:30px; transition:width 0.8s cubic-bezier(0.4,0,0.2,1); width:0%;"></div>
-                <div id="hdOverallText" style="position:absolute; width:100%; text-align:center; top:8px; font-weight:800; font-size:0.9rem; color:#0f172a; z-index:2; text-shadow:0 1px 1px rgba(255,255,255,0.6);">Memuatkan data PSS...</div>
-            </div>
-        </div>
-
         <!-- Mini Stats Row -->
         <div class="col-md-4">
-            <div class="card p-3 mt-2 border-0 shadow-sm" style="border-left:6px solid #06b6d4 !important; border-radius:14px;">
-                <div class="stat-label">Jumlah Sekolah</div>
-                <div class="stat-value" id="hdStatSchools">—</div>
+            <div class="card stat-card p-4 border-bottom border-info border-5">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="stat-label">Jumlah Sekolah</div>
+                    <div class="stat-icon bg-info-subtle text-info m-0" style="width: 40px; height: 40px; font-size: 1.2rem; border-radius: 10px;">
+                        <i class="bi bi-building"></i>
+                    </div>
+                </div>
+                <div class="stat-value text-dark" id="hdStatSchools">—</div>
             </div>
         </div>
+
         <div class="col-md-4">
-            <div class="card p-3 mt-2 border-0 shadow-sm" style="border-left:6px solid #10b981 !important; border-radius:14px;">
-                <div class="stat-label">Selesai Dihantar</div>
+            <div class="card stat-card p-4 border-bottom border-success border-5">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="stat-label">Selesai Dihantar</div>
+                    <div class="stat-icon bg-success-subtle text-success m-0" style="width: 40px; height: 40px; font-size: 1.2rem; border-radius: 10px;">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                </div>
                 <div class="stat-value text-success" id="hdStatDelivered">—</div>
             </div>
         </div>
+
         <div class="col-md-4">
-            <div class="card p-3 mt-2 border-0 shadow-sm" style="border-left:6px solid #f59e0b !important; border-radius:14px;">
-                <div class="stat-label">Jumlah Karton</div>
+            <div class="card stat-card p-4 border-bottom border-warning border-5">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="stat-label">Jumlah Karton</div>
+                    <div class="stat-icon bg-warning-subtle text-warning m-0" style="width: 40px; height: 40px; font-size: 1.2rem; border-radius: 10px;">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                </div>
                 <div class="stat-value text-warning" id="hdStatCartons">—</div>
             </div>
         </div>
