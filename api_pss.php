@@ -82,6 +82,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($action == 'save_schools' || $acti
     exit;
 }
 
+// --- 5. START NEW CO CYCLE ---
+if ($action == 'start_new_co') {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode(['error' => 'Method not allowed']);
+        exit;
+    }
+    
+    $data = json_decode(file_get_contents('php://input'), true);
+    $newCo = trim($data['new_co'] ?? '');
+    
+    if (empty($newCo)) {
+        echo json_encode(['status' => 'error', 'message' => 'Nama CO tidak boleh kosong.']);
+        exit;
+    }
+    
+    // Check if CO already exists
+    $check = $pdo->prepare("SELECT COUNT(*) FROM mms_logistik WHERE co_no = ?");
+    $check->execute([$newCo]);
+    if ($check->fetchColumn() > 0) {
+        echo json_encode(['status' => 'error', 'message' => "Kitaran '$newCo' sudah wujud dalam sistem."]);
+        exit;
+    }
+    
+    // Find latest CO
+    $latestCo = $pdo->query("SELECT co_no FROM mms_logistik ORDER BY co_no DESC LIMIT 1")->fetchColumn();
+    
+    try {
+        $pdo->beginTransaction();
+        
+        if ($latestCo) {
+            // Copy from previous CO
+            $stmt = $pdo->prepare("
+                INSERT INTO mms_logistik 
+                (id, name, district, dealer, co_no, totalCartons, extraPacks, isDelivered, isDocSigned) 
+                SELECT id, name, district, dealer, ?, totalCartons, extraPacks, 0, 0 
+                FROM mms_logistik 
+                WHERE co_no = ?
+            ");
+            $stmt->execute([$newCo, $latestCo]);
+        } else {
+            // Initialize from master schools
+            $stmt = $pdo->prepare("
+                INSERT INTO mms_logistik 
+                (id, name, district, dealer, co_no, totalCartons, extraPacks, isDelivered, isDocSigned) 
+                SELECT s.school_code, s.school_name, s.zone_code, LOWER(h.short_code), ?, 0, 0, 0, 0 
+                FROM susumurah_farmasimamadstock.schools s 
+                LEFT JOIN susumurah_farmasimamadstock.hds h ON s.default_hd_id = h.id
+            ");
+            $stmt->execute([$newCo]);
+        }
+        
+        $pdo->commit();
+        echo json_encode(['status' => 'success', 'message' => "Kitaran '$newCo' berjaya dimula dengan " . $pdo->query("SELECT COUNT(*) FROM mms_logistik WHERE co_no = '$newCo'")->fetchColumn() . " sekolah."]);
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        echo json_encode(['status' => 'error', 'message' => 'Gagal membina kitaran: ' . $e->getMessage()]);
+    }
+    exit;
+}
+
 // No matching action
 echo json_encode(['error' => 'Invalid action']);
 ?>

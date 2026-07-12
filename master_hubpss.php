@@ -445,6 +445,17 @@ require_once 'includes/header.php';
                 </div>
             </div>
         </div>
+        <hr class="my-3">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-bold"><i class="bi bi-plus-circle-fill text-success me-1"></i>Mula Kitaran (CO) Baharu</label>
+                <input type="text" id="newCoInput" class="form-control" placeholder="Contoh: CO6">
+            </div>
+            <div class="col-md-8">
+                <button onclick="startNewCoCycle()" class="btn btn-primary fw-bold px-4" style="border-radius:10px;"><i class="bi bi-rocket-takeoff me-1"></i> Mulakan Kitaran Baharu</button>
+                <small class="text-muted d-block mt-2"><i class="bi bi-info-circle"></i> Ini akan menyalin senarai sekolah &amp; jumlah karton dari kitaran sebelumnya. Semua progres penghantaran akan bermula dari 0%.</small>
+            </div>
+        </div>
         <hr class="my-4">
         <div class="row g-3">
             <div class="col-md-4">
@@ -979,6 +990,37 @@ require_once 'includes/header.php';
             await loadVehicles();
         } catch (e) {
             showToast(isMs ? "Gagal menyimpan senarai kenderaan." : "Failed to save vehicle list.");
+        }
+    }
+
+    async function startNewCoCycle() {
+        const val = document.getElementById('newCoInput').value.trim();
+        if (!val) {
+            alert("Sila masukkan nama kitaran baharu (contoh: CO6)!");
+            return;
+        }
+        
+        if (!confirm(`Adakah anda pasti mahu memulakan Kitaran ${val}?\nSemua data sekolah akan disalin dengan progres penghantaran bermula 0%.`)) {
+            return;
+        }
+        
+        try {
+            const res = await fetch('api_pss.php?action=start_new_co', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ new_co: val })
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                showToast(data.message);
+                document.getElementById('newCoInput').value = '';
+                // Reload data from server
+                await loadDataFromServer();
+            } else {
+                alert("Gagal: " + data.message);
+            }
+        } catch(e) {
+            alert("Ralat sistem ketika membina CO baharu.");
         }
     }
 
