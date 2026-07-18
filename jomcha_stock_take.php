@@ -65,29 +65,6 @@ try {
         FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 
-    $pdo->exec("CREATE TABLE IF NOT EXISTS `jomcha_sales` (
-        `id` INT AUTO_INCREMENT PRIMARY KEY,
-        `product_id` INT NOT NULL,
-        `quantity` INT NOT NULL,
-        `sale_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
-
-    $pdo->exec("CREATE TABLE IF NOT EXISTS `jomcha_damaged_stock` (
-        `id` INT AUTO_INCREMENT PRIMARY KEY,
-        `product_id` INT NOT NULL,
-        `quantity` INT NOT NULL,
-        `expiry_date` DATE DEFAULT NULL,
-        `batch_no` VARCHAR(100) DEFAULT NULL,
-        `image_data` LONGTEXT DEFAULT NULL,
-        `reported_by` VARCHAR(100) NOT NULL,
-        `issue_type` VARCHAR(100) NOT NULL,
-        `status` VARCHAR(50) NOT NULL DEFAULT 'Dilaporkan',
-        `returned_by` VARCHAR(100) DEFAULT NULL,
-        `return_date` DATETIME DEFAULT NULL,
-        `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 } catch (PDOException $e) {
     error_log("Jomcha Stock Take tables creation failed: " . $e->getMessage());
 }
@@ -148,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $sa_rack + $sa_pallet_1 + $sa_pallet_2 + $sa_chiller_1 + $sa_chiller_2 + $sa_freezer_1 + $sa_freezer_2;
 
                     // Ambil baki teoretikal
-                    // Theoretical = (Delivered ctn * pack_size) - Sold pcs - Damaged pcs
+                    // Theoretical = (Delivered ctn * pack_size)
                     $stmtDel = $pdo->prepare("
                         SELECT COALESCE(SUM(oi.qty * p.pack_size), 0)
                         FROM outbound_items oi
@@ -159,15 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmtDel->execute([$product_id]);
                     $total_delivered_pcs = intval($stmtDel->fetchColumn());
 
-                    $stmtSale = $pdo->prepare("SELECT COALESCE(SUM(quantity), 0) FROM jomcha_sales WHERE product_id = ?");
-                    $stmtSale->execute([$product_id]);
-                    $total_sold_before_pcs = intval($stmtSale->fetchColumn());
-
-                    $stmtDmg = $pdo->prepare("SELECT COALESCE(SUM(quantity), 0) FROM jomcha_damaged_stock WHERE product_id = ?");
-                    $stmtDmg->execute([$product_id]);
-                    $total_damaged_before_pcs = intval($stmtDmg->fetchColumn());
-
-                    $theoretical = $total_delivered_pcs - $total_sold_before_pcs - $total_damaged_before_pcs;
+                    $theoretical = $total_delivered_pcs;
                     
                     if (!isset($counts['_counted']) || $counts['_counted'] != '1') continue;
 
@@ -210,13 +179,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $physical_qty, $theoretical, $variance, $taken_by
                     ]);
 
-                    // Jika stok fizikal kurang daripada teoretikal, auto-bill sebagai jualan
-                    if ($variance < 0) {
-                        $diff = abs($variance);
-                        $stmtInsertSale = $pdo->prepare("INSERT INTO jomcha_sales (product_id, quantity) VALUES (?, ?)");
-                        $stmtInsertSale->execute([$product_id, $diff]);
-                        $total_auto_sales += $diff;
-                    }
                     $success_count++;
                 }
 
@@ -225,9 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $pdo->commit();
-                $msg = $total_auto_sales > 0 
-                    ? "Berjaya! $success_count produk dikira. Kuantiti sebanyak $total_auto_sales pcs telah direkodkan sebagai jualan (Auto-Billed)."
-                    : "Berjaya! $success_count produk dikira. Rekod baki stok adalah seimbang.";
+                $msg = "Berjaya! $success_count produk dikira. Kiraan stok fizikal telah direkodkan.";
                 $msg_type = 'success';
             } catch (Exception $e) {
                 if ($pdo->inTransaction()) $pdo->rollBack();
@@ -283,15 +243,11 @@ if ($lt && $lt['last_date']) {
 // Active stocks with balance calculation
 $jomcha_stocks = $pdo->query("
     SELECT p.id, p.name, p.category, p.pack_size, p.uom,
-        (
             (SELECT COALESCE(SUM(oi.qty * p2.pack_size), 0)
              FROM outbound_items oi
              JOIN outbound_logs ol ON oi.outbound_id = ol.id
              JOIN products p2 ON oi.product_id = p2.id
-             WHERE oi.product_id = p.id AND ol.category = 'Jomcha') -
-            (SELECT COALESCE(SUM(quantity), 0) FROM jomcha_sales WHERE product_id = p.id) -
-            (SELECT COALESCE(SUM(quantity), 0) FROM jomcha_damaged_stock WHERE product_id = p.id)
-        ) as baki
+             WHERE oi.product_id = p.id AND ol.category = 'Jomcha') as baki
     FROM products p 
     WHERE p.is_active = 1
     ORDER BY baki DESC, p.name ASC
