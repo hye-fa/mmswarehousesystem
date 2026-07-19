@@ -108,6 +108,16 @@ require_once 'includes/header.php';
         padding: 14px 20px !important;
         border: none;
     }
+    .modern-table th::selection,
+    .modern-table th *::selection {
+        background-color: #38bdf8;
+        color: #0f172a;
+    }
+    .modern-table th::-moz-selection,
+    .modern-table th *::-moz-selection {
+        background-color: #38bdf8;
+        color: #0f172a;
+    }
     .modern-table td {
         padding: 14px 20px !important;
         vertical-align: middle;

@@ -294,7 +294,6 @@ if (isset($_SESSION['user_id']) && isset($pdo)) {
                         <?php if ($is_admin): ?>
                         <div class="dropdown-divider"></div>
                         <li><a class="dropdown-item" href="user_management.php"><i class="bi bi-people me-1"></i><span data-lang="nav_user_mgmt">User Management</span></a></li>
-                        <li><a class="dropdown-item" href="notification_settings.php"><i class="bi bi-bell me-1 text-warning"></i><span>Notification Settings</span></a></li>
                         <li><a class="dropdown-item" href="system_logs.php"><i class="bi bi-shield-check me-1"></i><span data-lang="nav_audit_logs">System Audit Logs</span></a></li>
                         <?php endif; ?>
                     </ul>
