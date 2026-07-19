@@ -101,7 +101,7 @@ require_once 'includes/header.php';
 
 <style>
     body {
-        background-color: #faf5ff;
+        background-color: #f0fdf4;
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
     
@@ -112,26 +112,88 @@ require_once 'includes/header.php';
     
     .jomcha-card {
         background-color: #ffffff;
-        border-radius: 16px;
-        border: 1px solid rgba(168, 85, 247, 0.12);
+        border-radius: 20px;
+        border: 1px solid rgba(16, 185, 129, 0.15);
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.05);
     }
     
     .text-navy {
-        color: #1e1b4b;
+        color: #064e3b;
     }
     
     .nav-pills .nav-link {
-        color: #6b21a8;
-        border: 1px solid rgba(107, 33, 168, 0.15);
+        color: #15803d;
+        border: 1px solid rgba(21, 128, 61, 0.2);
         background-color: #ffffff;
-        transition: all 0.2s ease-in-out;
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        padding: 12px 20px;
+    }
+    
+    .nav-pills .nav-link:hover {
+        background-color: #ecfdf5;
     }
     
     .nav-pills .nav-link.active {
-        background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%) !important;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
         color: #ffffff !important;
         border-color: transparent;
-        box-shadow: 0 4px 12px rgba(126, 34, 206, 0.2);
+        box-shadow: 0 6px 15px rgba(16, 185, 129, 0.25);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8fafc;
+        transition: background-color 0.2s ease;
+    }
+
+    /* Modern Table Style */
+    .pro-table {
+        border-collapse: separate !important;
+        border-spacing: 0 8px !important;
+    }
+    .pro-table thead th {
+        border: none !important;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        letter-spacing: 1.2px;
+        color: #64748b;
+        font-weight: 800;
+        padding-bottom: 8px !important;
+    }
+    .pro-table tbody tr {
+        background-color: #ffffff;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        border-radius: 14px;
+        transition: all 0.2s ease;
+    }
+    .pro-table tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(16, 185, 129, 0.1);
+        background-color: #ffffff;
+    }
+    .pro-table td {
+        padding: 18px 14px !important;
+        border: none !important;
+        vertical-align: middle;
+    }
+    .pro-table td:first-child { 
+        border-top-left-radius: 14px; 
+        border-bottom-left-radius: 14px; 
+    }
+    .pro-table td:last-child { 
+        border-top-right-radius: 14px; 
+        border-bottom-right-radius: 14px; 
+    }
+    
+    .cat-badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        padding: 4px 8px;
+        background-color: #d1fae5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+        text-transform: uppercase;
     }
 </style>
 
@@ -140,9 +202,9 @@ require_once 'includes/header.php';
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <span class="badge bg-purple-subtle text-white text-uppercase fw-extrabold px-3 py-1.5 rounded-pill mb-2" style="font-size:0.72rem; letter-spacing:1px; background: rgba(255,255,255,0.15);" data-lang="jomcha_mon_badge">Jomcha Monitor Hub</span>
+                <span class="badge bg-success-subtle text-white text-uppercase fw-extrabold px-3 py-1.5 rounded-pill mb-2" style="font-size:0.72rem; letter-spacing:1px; background: rgba(255,255,255,0.15);" data-lang="jomcha_mon_badge">Jomcha Monitor Hub</span>
                 <h1 class="h2 fw-extrabold m-0" style="letter-spacing: -1px;" data-lang="jomcha_mon_title">
-                    🎯 Pemantauan Stok Jomcha
+                    ðŸŽ¯ Pemantauan Stok Jomcha
                 </h1>
                 <p class="text-white-50 m-0 mt-1" style="font-size: 0.95rem;" data-lang="jomcha_mon_subtitle">
                     Pantau baki inventori semasa yang diedarkan merentasi ketiga-tiga zon fizikal outlet.
@@ -172,19 +234,19 @@ require_once 'includes/header.php';
                 <div class="col-4">
                     <div class="p-2 text-center bg-white rounded-3 border shadow-sm">
                         <small class="text-muted d-block small" data-lang="jomcha_mon_jcb_units">Unit JC Barn</small>
-                        <strong class="text-purple fs-5"><?= number_format($jc_barn_total_units) ?></strong>
+                        <strong class="text-success fs-5"><?= number_format($jc_barn_total_units) ?></strong>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="p-2 text-center bg-white rounded-3 border shadow-sm">
                         <small class="text-muted d-block small" data-lang="jomcha_mon_mms_units">Unit Kedai Jomcha</small>
-                        <strong class="text-purple fs-5"><?= number_format($mms_total_units) ?></strong>
+                        <strong class="text-success fs-5"><?= number_format($mms_total_units) ?></strong>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="p-2 text-center bg-white rounded-3 border shadow-sm">
                         <small class="text-muted d-block small" data-lang="jomcha_mon_sa_units">Unit Store Area</small>
-                        <strong class="text-purple fs-5"><?= number_format($sa_total_units) ?></strong>
+                        <strong class="text-success fs-5"><?= number_format($sa_total_units) ?></strong>
                     </div>
                 </div>
             </div>
@@ -206,14 +268,14 @@ require_once 'includes/header.php';
 
     <div class="tab-content" id="monitorTabContent">
         
-        <!-- ════════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <!-- TAB: JC BARN                             -->
-        <!-- ════════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <div class="tab-pane fade show active" id="tab-jcb" role="tabpanel">
             <div class="jomcha-card p-4 shadow-sm">
-                <h5 class="fw-bold text-navy mb-3"><i class="bi bi-shop text-purple me-2"></i><span data-lang="jomcha_mon_sec_jcb">Zon 1: JC Barn (2 Chiller, 1 Rack)</span></h5>
+                <h5 class="fw-bold text-navy mb-3"><i class="bi bi-shop text-success me-2"></i><span data-lang="jomcha_mon_sec_jcb">Zon 1: JC Barn (2 Chiller, 1 Rack)</span></h5>
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle table-borderless" style="font-size:0.92rem;">
+                    <table class="table pro-table w-100">
                         <thead class="table-light">
                             <tr class="text-muted fw-bold small">
                                 <th class="ps-3" style="width: 40%;" data-lang="jomcha_mon_col_prod">Nama Produk</th>
@@ -231,7 +293,7 @@ require_once 'includes/header.php';
                             ?>
                                 <tr class="monitor-row-item border-bottom" data-name="<?= strtolower(htmlspecialchars($stk['product_name'])) ?>">
                                     <td class="ps-3">
-                                        <span class="badge bg-purple-subtle text-purple mb-1" style="font-size: 0.7rem;"><?= htmlspecialchars($stk['category']) ?></span>
+                                        <span class="badge cat-badge mb-1 rounded-pill"><?= htmlspecialchars($stk['category']) ?></span>
                                         <h6 class="fw-bold mb-0 text-navy"><?= htmlspecialchars($stk['product_name']) ?></h6>
                                     </td>
                                     <td class="text-center">
@@ -246,7 +308,7 @@ require_once 'includes/header.php';
                                         <span class="fw-bold text-dark"><?= floor($stk['jcb_rack_ctn']) ?> ctn</span>
                                         <div class="text-muted small"><?= $stk['jcb_rack_pcs'] ?> pcs</div>
                                     </td>
-                                    <td class="pe-3 text-end fw-extrabold text-purple fs-6">
+                                    <td class="pe-3 text-end fw-extrabold text-success fs-6">
                                         <?= number_format($stk['total']) ?> pcs
                                         <div class="text-muted small fw-semibold" style="font-size: 10.5px;">
                                             (<?= floor($stk['total'] / $cs) ?> ctn + <?= $stk['total'] % $cs ?> pcs)
@@ -260,14 +322,14 @@ require_once 'includes/header.php';
             </div>
         </div>
 
-        <!-- ════════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <!-- TAB: KEDAI JOMCHA (MOO MOO STATION)      -->
-        <!-- ════════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <div class="tab-pane fade" id="tab-mms" role="tabpanel">
             <div class="jomcha-card p-4 shadow-sm">
-                <h5 class="fw-bold text-navy mb-3"><i class="bi bi-box2 text-purple me-2"></i><span data-lang="jomcha_mon_sec_mms">Zon 2: Kedai Jomcha (1 Rack, 2 Chiller, 2 Freezer)</span></h5>
+                <h5 class="fw-bold text-navy mb-3"><i class="bi bi-box2 text-success me-2"></i><span data-lang="jomcha_mon_sec_mms">Zon 2: Kedai Jomcha (1 Rack, 2 Chiller, 2 Freezer)</span></h5>
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle table-borderless" style="font-size:0.92rem;">
+                    <table class="table pro-table w-100">
                         <thead class="table-light">
                             <tr class="text-muted fw-bold small">
                                 <th class="ps-3" style="width: 30%;" data-lang="jomcha_mon_col_prod">Nama Produk</th>
@@ -287,7 +349,7 @@ require_once 'includes/header.php';
                             ?>
                                 <tr class="monitor-row-item border-bottom" data-name="<?= strtolower(htmlspecialchars($stk['product_name'])) ?>">
                                     <td class="ps-3">
-                                        <span class="badge bg-purple-subtle text-purple mb-1" style="font-size: 0.7rem;"><?= htmlspecialchars($stk['category']) ?></span>
+                                        <span class="badge cat-badge mb-1 rounded-pill"><?= htmlspecialchars($stk['category']) ?></span>
                                         <h6 class="fw-bold mb-0 text-navy"><?= htmlspecialchars($stk['product_name']) ?></h6>
                                     </td>
                                     <td class="text-center">
@@ -310,7 +372,7 @@ require_once 'includes/header.php';
                                         <span class="fw-bold text-dark"><?= floor($stk['mms_freezer_ice_cream_ctn']) ?> ctn</span>
                                         <div class="text-muted small"><?= $stk['mms_freezer_ice_cream_pcs'] ?> pcs</div>
                                     </td>
-                                    <td class="pe-3 text-end fw-extrabold text-purple fs-6">
+                                    <td class="pe-3 text-end fw-extrabold text-success fs-6">
                                         <?= number_format($stk['total']) ?> pcs
                                         <div class="text-muted small fw-semibold" style="font-size: 10.5px;">
                                             (<?= floor($stk['total'] / $cs) ?> ctn + <?= $stk['total'] % $cs ?> pcs)
@@ -324,14 +386,14 @@ require_once 'includes/header.php';
             </div>
         </div>
 
-        <!-- ════════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <!-- TAB: STORE AREA                          -->
-        <!-- ════════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <div class="tab-pane fade" id="tab-sa" role="tabpanel">
             <div class="jomcha-card p-4 shadow-sm">
-                <h5 class="fw-bold text-navy mb-3"><i class="bi bi-house-door text-purple me-2"></i><span data-lang="jomcha_mon_sec_sa">Zon 3: Store Area (1 Rack, 2 Pallet, 2 Chiller, 2 Freezer)</span></h5>
+                <h5 class="fw-bold text-navy mb-3"><i class="bi bi-house-door text-success me-2"></i><span data-lang="jomcha_mon_sec_sa">Zon 3: Store Area (1 Rack, 2 Pallet, 2 Chiller, 2 Freezer)</span></h5>
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle table-borderless" style="font-size:0.92rem;">
+                    <table class="table pro-table w-100">
                         <thead class="table-light">
                             <tr class="text-muted fw-bold small">
                                 <th class="ps-3" style="width: 25%;" data-lang="jomcha_mon_col_prod">Nama Produk</th>
@@ -353,7 +415,7 @@ require_once 'includes/header.php';
                             ?>
                                 <tr class="monitor-row-item border-bottom" data-name="<?= strtolower(htmlspecialchars($stk['product_name'])) ?>">
                                     <td class="ps-3">
-                                        <span class="badge bg-purple-subtle text-purple mb-1" style="font-size: 0.7rem;"><?= htmlspecialchars($stk['category']) ?></span>
+                                        <span class="badge cat-badge mb-1 rounded-pill"><?= htmlspecialchars($stk['category']) ?></span>
                                         <h6 class="fw-bold mb-0 text-navy"><?= htmlspecialchars($stk['product_name']) ?></h6>
                                     </td>
                                     <td class="text-center">
@@ -384,7 +446,7 @@ require_once 'includes/header.php';
                                         <span class="fw-bold text-dark"><?= floor($stk['sa_freezer_2_ctn']) ?> ctn</span>
                                         <div class="text-muted small"><?= $stk['sa_freezer_2_pcs'] ?> pcs</div>
                                     </td>
-                                    <td class="pe-3 text-end fw-extrabold text-purple fs-6">
+                                    <td class="pe-3 text-end fw-extrabold text-success fs-6">
                                         <?= number_format($stk['total']) ?> pcs
                                         <div class="text-muted small fw-semibold" style="font-size: 10.5px;">
                                             (<?= floor($stk['total'] / $cs) ?> ctn + <?= $stk['total'] % $cs ?> pcs)
