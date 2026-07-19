@@ -12,6 +12,7 @@ try {
             ws.row_num,
             p.name AS sku_name,
             p.pallet_capacity,
+            p.pack_size,
             b.batch_no,
             b.qty_on_hand AS quantity,
             b.created_at AS received_date_timestamp,

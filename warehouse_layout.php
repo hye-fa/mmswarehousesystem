@@ -361,30 +361,34 @@ function renderWarehouseGrid(slots) {
         let floorHtml = '';
 
         blockSlots.forEach(slot => {
-            let qty = parseInt(slot.quantity) || 0;
+            // Calculate actual Cartons using the pack_size
+            let rawQty = parseInt(slot.quantity) || 0; 
+            let packSize = parseInt(slot.pack_size) || 1; // Default to 1 to prevent division by zero
+            let ctnQty = Math.floor(rawQty / packSize);
             let capacity = parseInt(slot.pallet_capacity) || 0;
             
+            // Determine Color Status based on Cartons (CTN) vs Capacity
             let statusClass = 'slot-empty';
-            if (qty > 0) {
-                if (capacity > 0 && qty >= capacity) {
-                    statusClass = 'slot-full';
+            if (rawQty > 0) {
+                if (capacity > 0 && ctnQty >= capacity) {
+                    statusClass = 'slot-full'; // Green
                 } else {
-                    statusClass = 'slot-medium';
+                    statusClass = 'slot-medium'; // Blue
                 }
             }
 
             const shortLabel = slot.zone === 'POW' ? slot.lane : slot.lane + slot.row_num;
             
             let timeStr = '';
-            if(qty > 0 && slot.received_date_timestamp) {
+            if(rawQty > 0 && slot.received_date_timestamp) {
                 const dateObj = new Date(slot.received_date_timestamp);
                 timeStr = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             }
 
-            const tooltipContent = (qty > 0) 
+            const tooltipContent = (rawQty > 0) 
                 ? `<strong>${slot.location_code} #${slot.batch_no || 'N/A'}</strong><br>
                    ${slot.sku_name || 'Unknown Item'}<br>
-                   Qty: ${qty} / ${capacity || '?'} CTN<br>
+                   Qty: ${ctnQty} / ${capacity || '?'} CTN<br>
                    <small>Received ${timeStr}</small>` 
                 : `<strong>${slot.location_code}</strong><br>Empty`;
 
