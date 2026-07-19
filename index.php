@@ -760,14 +760,6 @@ require_once 'includes/header.php';
                     <span class="desc" data-lang="card_pss_delivery_d">Proses dokumen DO bagi projek Susu Sekolah.</span>
                 </div>
             </a>
-
-            <a href="import_master.php" class="nav-card">
-                <div class="icon-box bg-success-subtle text-success"><i class="bi bi-file-earmark-spreadsheet"></i></div>
-                <div class="content">
-                    <span class="title" data-lang="import_master_title">Import Master PSS</span>
-                    <span class="desc" data-lang="import_master_desc">Kemas kini data sekolah & kontrak master.</span>
-                </div>
-            </a>
         </div>
 
         <!-- SEKSYEN 4: AUDIT, PENTADBIR & LOG -->
