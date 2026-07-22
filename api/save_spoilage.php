@@ -36,6 +36,8 @@ try {
         foreach ($_FILES['spoilage_photos']['name'] as $key => $name) {
             $tmp_name = $_FILES['spoilage_photos']['tmp_name'][$key];
             $file_ext = pathinfo($name, PATHINFO_EXTENSION);
+            $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx'];
+            if (!in_array(strtolower($file_ext), $allowed_exts)) throw new Exception('Fail tidak dibenarkan.');
             
             // Unique filename to prevent overwriting evidence
             $new_filename = time() . "_" . bin2hex(random_bytes(2)) . "." . $file_ext;

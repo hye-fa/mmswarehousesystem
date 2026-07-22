@@ -446,6 +446,7 @@ try {
     }
 } catch (Exception $ex) {}
 sort($custom_sub_locations);
+$sub_locations_set = array_merge($standard_sub_list, $custom_sub_locations);
 $cat_subcat_map = [];
 try {
     $rows_pc = $pdo->query("SELECT category_name, sub_categories FROM product_categories")->fetchAll(PDO::FETCH_ASSOC);

@@ -161,7 +161,7 @@ if ($action == 'start_new_co') {
         }
         
         $pdo->commit();
-        echo json_encode(['status' => 'success', 'message' => "Kitaran '$newCo' berjaya dimula dengan " . $pdo->query("SELECT COUNT(*) FROM mms_logistik WHERE co_no = '$newCo'")->fetchColumn() . " sekolah."]);
+        echo json_encode(['status' => 'success', 'message' => "Kitaran '$newCo' berjaya dimula dengan " . $pdo->query("SELECT COUNT(*) FROM mms_logistik WHERE co_no = " . $pdo->quote($newCo))->fetchColumn() . " sekolah."]);
     } catch (Exception $e) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();

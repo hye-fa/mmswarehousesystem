@@ -123,6 +123,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 // Handle Compulsory Signed PRF Form File Upload
                 $prf_form_path = '';
                 $file_ext = pathinfo($_FILES['prf_form_file']['name'], PATHINFO_EXTENSION);
+            $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx'];
+            if (!in_array(strtolower($file_ext), $allowed_exts)) throw new Exception('Fail tidak dibenarkan.');
                 $new_filename = 'PRF_' . time() . '_' . bin2hex(random_bytes(2)) . '.' . $file_ext;
                 $dest = $upload_dir . $new_filename;
                 if (move_uploaded_file($_FILES['prf_form_file']['tmp_name'], $dest)) {
@@ -177,6 +179,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         if (empty($orig_name)) continue;
                         $tmp_file = $_FILES['stack_photos']['tmp_name'][$idx];
                         $file_ext = pathinfo($orig_name, PATHINFO_EXTENSION);
+            $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx'];
+            if (!in_array(strtolower($file_ext), $allowed_exts)) throw new Exception('Fail tidak dibenarkan.');
                         $photo_filename = 'STACK_' . $return_id . '_' . time() . '_' . $idx . '_' . bin2hex(random_bytes(2)) . '.' . $file_ext;
                         $photo_dest = $upload_dir . $photo_filename;
                         
@@ -229,6 +233,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $cn_file_path = $existing['cn_file'];
                     if (!empty($_FILES['cn_file']['name'])) {
                         $file_ext = pathinfo($_FILES['cn_file']['name'], PATHINFO_EXTENSION);
+            $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx'];
+            if (!in_array(strtolower($file_ext), $allowed_exts)) throw new Exception('Fail tidak dibenarkan.');
                         $new_filename = 'CN_' . $return_id . '_' . time() . '.' . $file_ext;
                         $dest = $upload_dir . $new_filename;
                         if (move_uploaded_file($_FILES['cn_file']['tmp_name'], $dest)) {
